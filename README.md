@@ -1,41 +1,77 @@
 # gamepad.js
-Custom implementation of the Gamepad API for VR and gamepads.
+Custom implementation (wrapper) of the Gamepad API for VR and gamepads.
 
 Under development and subject to change in the future, so I can't garantee that it will work with your app in a new version.
 
-Code is messy but works.
+This works with Oculus Rifth XBOX controller, the Oculus Remote Controller and the Oculus Touch Controllers. For it to work with HTC Vive you will need to create a mapping object similar to the ones in gamepadMapping.js but I'll add it later.
 
-Further information on the gamepad API you can contact @Tojiro
+I've created a set of mappings in gamepadMapping.js, they are meant to be used with the control you require to detect and as examples for new types of gamepads..
 
-This works with Oculus Rifth XBOX controller and the Touch Controllers.
 
-Example:
+Further information on the gamepad API you can contact @Tojiro (twitter.com/tojiro)
+
+# Example:
 
 ```javascript
 
     /*
-        Each controller has an String ID, use a key of the string to be found.
-        In this example the left and right Touch Controllers, and the XBOX controllers.
+        Each controller has an String ID, use a key of the string to find the controller.
+        In this example the left and right Touch Controllers, the remote and the XBOX controllers.
+
+        Note: the mapping variables are in src/gamepadMapping.js
     */
-    var gamepadIdList = ['left', 'right', 'xbox'];
+
+    var gamepadInfo = {
+        xbox:{
+            mapping: xboxMapping
+        },
+        right:{
+            mapping: rightMapping
+        },
+        left:{
+            mapping: leftMapping
+        },
+        remote:{
+            mapping: remoteMapping
+        }
+    };
 
     /*
         Fired every time a button is pressed, no matter which
 
     */
     var onGamepadPressed = function(gamepads){
+        // The same keys used in gamepadInfo are used to retrieve the gamepad
         var left = gamepads.left;
         var right = gamepads.right;
         var xbox = gamepads.xbox;
+        var remote = gamepads.remote;
 
-        var buttons = xbox.buttons;
-        if(buttons.A.pressed){
-            // TODO custom code
+
+        if(xbox){
+            var buttons = xbox.buttons;
+            if(buttons.A.pressed){
+                // Fire the XBOX haptic vibration
+                xbox.haptics[1].pulse(1, 100);
+            }
+
+            if(buttons.Y.pressed){
+                // TODO custom code
+            }
         }
 
-        if(buttons.Y.pressed){
-            // TODO custom code
+
+        if(remote){
+            var buttons = remote.buttons;
+
+            if(buttons.SELECT.pressed){
+                // Fire the XBOX haptic from the remote controller
+                xbox.haptics[0].pulse(1, 100);
+            }
         }
+
+
+
 
         // Threejs Mesh called handLeft and handRight for the Touch Controllers hands
         handLeft.position.fromArray(left.pose.position);
@@ -56,7 +92,7 @@ Example:
 
 
 
-    ABSULIT.gamepad.init(gamepadIdList, onGamepadPressed, onUpdate);
+    ABSULIT.gamepad.init(gamepadInfo, onGamepadPressed, onUpdate);
 
     /**********************/
 
