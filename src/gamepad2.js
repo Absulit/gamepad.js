@@ -4,6 +4,8 @@ export class Gamepad extends EventTarget {
     #gamepads = null;
     #connected = false;
     #gamepadInfo = null;
+    #formattedGamepads = {}; // TODO use Map
+    #buttons = {};
     constructor(gamepadInfo) {
         super();
         if (Gamepad.instance) {
@@ -40,6 +42,7 @@ export class Gamepad extends EventTarget {
     #getController(id){
         // console.log(gamepads, id);
         var gp, gpindex;
+        this.#gamepads = this.#getGamepads();
         for(gpindex in this.#gamepads){
             gp = this.#gamepads[gpindex];
             //console.log(gp);
@@ -51,7 +54,7 @@ export class Gamepad extends EventTarget {
         return gp;
     }
 
-    update = _ => {
+    update = f => {
         if(!this.#connected){
             return;
         }
@@ -60,8 +63,37 @@ export class Gamepad extends EventTarget {
             // console.log(gamepadId);
             const mapping = this.#gamepadInfo[gamepadId].mapping;
             const gamepad = this.#getController(gamepadId)
+            if(!gamepad){
+                continue;
+            }
+            this.#buttons = {}
             // console.log(gamepad);
 
+            this.#formattedGamepads = {};
+            this.#formattedGamepads[gamepadId] = {};
+            this.#formattedGamepads[gamepadId].pose = gamepad.pose;
+
+
+            for (let buttonName in mapping.buttons){
+                this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+            }
+
+            for(let buttonName in mapping.axes){
+                const mappingButton = mapping.axes[buttonName];
+
+                const button = this.#buttons[buttonName] = {x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y]};
+                this.#buttons[buttonName].pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                this.#buttons[buttonName].angle = Math.atan2(button.y, button.x);
+            }
+
+            this.#formattedGamepads[gamepadId].buttons = this.#buttons;
+            this.#formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
+            this.#formattedGamepads[gamepadId].vibrationActuator = gamepad.vibrationActuator;
+
+
+
+
+            f(this.#formattedGamepads)
         }
     }
 }
