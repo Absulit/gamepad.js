@@ -36,9 +36,13 @@ ABSULIT.gamepad = ABSULIT.gamepad || (function () {
         //console.log(navigator.getVRDisplays() );
 
         window.addEventListener("gamepadconnected", function(e) {
+
             gamepads = getGamepads();
-            gamepad = getController(gamepads, 'xbox');
+            console.log(gamepads);
+            gamepad = getController(gamepads, 'standard');
+            console.log(gamepad);
             gamepadConnected = !!gamepad;
+            console.log(e, gamepadConnected);
         });
 
         window.addEventListener("gamepaddisconnected", function(e) {
@@ -78,12 +82,12 @@ ABSULIT.gamepad = ABSULIT.gamepad || (function () {
     }
 
     function getController(gamepads, id){
-        //console.log(gamepads);
+        // console.log(gamepads, id);
         var gp, gpindex;
         for(gpindex in gamepads){
             gp = gamepads[gpindex];
             //console.log(gp);
-            //console.log('---- gp.id',gp.id);
+            // console.log('---- gp.id',gp?.id, gp?.id.toLowerCase().indexOf(id));
             if(gp !== null && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)){
                 break;
             }
@@ -104,7 +108,9 @@ ABSULIT.gamepad = ABSULIT.gamepad || (function () {
             //gamepadId = gamepadIdListLocal[gamepadIdListIndex].gamepadId;
             var mapping = gamepadInfoLocal[gamepadId].mapping;
             gamepad = getController(gamepads, gamepadId);
-            if(gamepadConnected && gamepad.buttons){
+            // console.log(gamepad);
+
+            if(gamepadConnected && gamepad?.buttons){
 
                 formattedGamepads[gamepadId] = {};
                 formattedGamepads[gamepadId].pose = gamepad.pose;
