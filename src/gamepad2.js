@@ -78,10 +78,13 @@ export class Gamepad extends EventTarget {
                 this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
             }
 
+            // console.log(gamepad.axes);
+
             for(let buttonName in mapping.axes){
                 const mappingButton = mapping.axes[buttonName];
 
                 const button = this.#buttons[buttonName] = {x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y]};
+
                 this.#buttons[buttonName].pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
                 this.#buttons[buttonName].angle = Math.atan2(button.y, button.x);
             }
