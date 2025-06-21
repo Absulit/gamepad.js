@@ -18,6 +18,20 @@ export class Gamepad extends EventTarget {
         window.addEventListener("gamepaddisconnected", this.#onGamepadDisconnected);
     }
 
+    #init(){
+        for (let gamepadId in this.#gamepadInfo) {
+            const gamepad = this.#getController(gamepadId)
+            if (!gamepad) {
+                continue;
+            }
+
+            this.#formattedGamepads[gamepadId] = {}
+            this.#formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
+            this.#formattedGamepads[gamepadId].vibrationActuator = gamepad.vibrationActuator;
+            this.#formattedGamepads[gamepadId].vibrate = d => this.#vibrate(d, gamepad);
+        }
+    }
+
     #getGamepads() {
         return navigator.getGamepads();
     }
@@ -27,6 +41,7 @@ export class Gamepad extends EventTarget {
         this.#gamepads = this.#getGamepads();
         console.log(this.#gamepads);
         this.#connected = true;
+        this.#init();
     }
 
     #onGamepadDisconnected = e => {
@@ -35,14 +50,11 @@ export class Gamepad extends EventTarget {
     }
 
     #getController(id) {
-        // console.log(gamepads, id);
-        let gp, gpindex;
+        let gp;
         this.#gamepads = this.#getGamepads();
-        for (gpindex in this.#gamepads) {
+        for (let gpindex in this.#gamepads) {
             gp = this.#gamepads[gpindex];
-            //console.log(gp);
-            // console.log('---- gp.id',gp?.id, gp?.id.toLowerCase().indexOf(id));
-            if (gp !== null && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)) {
+            if (gp && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)) {
                 break;
             }
         }
@@ -55,25 +67,20 @@ export class Gamepad extends EventTarget {
         }
 
         for (let gamepadId in this.#gamepadInfo) {
-            // console.log(gamepadId);
-            const mapping = this.#gamepadInfo[gamepadId].mapping;
             const gamepad = this.#getController(gamepadId)
+
             if (!gamepad) {
                 continue;
             }
+            const {mapping} = this.#gamepadInfo[gamepadId];
             this.#buttons = {}
-            // console.log(gamepad);
 
-            this.#formattedGamepads = {};
-            this.#formattedGamepads[gamepadId] = {};
             this.#formattedGamepads[gamepadId].pose = gamepad.pose;
 
 
             for (let buttonName in mapping.buttons) {
                 this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
             }
-
-            // console.log(gamepad.axes);
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
@@ -85,12 +92,6 @@ export class Gamepad extends EventTarget {
             }
 
             this.#formattedGamepads[gamepadId].buttons = this.#buttons;
-            this.#formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
-            this.#formattedGamepads[gamepadId].vibrationActuator = gamepad.vibrationActuator;
-            this.#formattedGamepads[gamepadId].vibrate = d => this.#vibrate(d, gamepad);
-
-
-
 
             f(this.#formattedGamepads)
         }

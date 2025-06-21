@@ -30,7 +30,7 @@ function update() {
 
 
         if (xbox) {
-            const buttons = xbox.buttons;
+            const { buttons } = xbox;
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
@@ -45,7 +45,7 @@ function update() {
                 // xbox.vibrate(1000);
             }
 
-            if(A.pressed && B.pressed){
+            if (A.pressed && B.pressed) {
                 xbox.vibrate(2000)
             }
 
@@ -69,9 +69,11 @@ function update() {
             }
             if (LT.pressed) {
                 console.log('---- LT PRESSED');
+                xbox.vibrate(100)
             }
             if (RT.pressed) {
                 console.log('---- RT PRESSED');
+                xbox.vibrate(100)
             }
             if (VIEW.pressed) {
                 console.log('---- VIEW PRESSED');
