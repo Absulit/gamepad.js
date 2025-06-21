@@ -24,10 +24,7 @@ const gamepad = new Gamepad(gamepadInfo)
 function update() {
     requestAnimationFrame(update);
     gamepad.update(gamepads => {
-        // console.log(e);
-
         const { left, right, standard: xbox, remote } = gamepads;
-
 
         if (xbox) {
             const { buttons } = xbox;
@@ -35,14 +32,8 @@ function update() {
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
 
-
             if (A.pressed) {
-                // Fire the XBOX haptic vibration
-                // xbox.haptics[1].pulse(1, 100);
-                // console.log(xbox.haptics);
-
                 console.log('---- A PRESSED');
-                // xbox.vibrate(1000);
             }
 
             if (A.pressed && B.pressed) {
@@ -68,12 +59,12 @@ function update() {
                 console.log('---- RB PRESSED');
             }
             if (LT.pressed) {
-                console.log('---- LT PRESSED');
-                xbox.vibrate(100)
+                console.log('---- LT PRESSED', LT);
+                xbox.vibrate(100, LT.value)
             }
             if (RT.pressed) {
                 console.log('---- RT PRESSED');
-                xbox.vibrate(100)
+                xbox.vibrate(100, RT.value)
             }
             if (VIEW.pressed) {
                 console.log('---- VIEW PRESSED');

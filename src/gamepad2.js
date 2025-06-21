@@ -21,6 +21,7 @@ export class Gamepad extends EventTarget {
     #init(){
         for (let gamepadId in this.#gamepadInfo) {
             const gamepad = this.#getController(gamepadId)
+
             if (!gamepad) {
                 continue;
             }
@@ -28,7 +29,7 @@ export class Gamepad extends EventTarget {
             this.#formattedGamepads[gamepadId] = {}
             this.#formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
             this.#formattedGamepads[gamepadId].vibrationActuator = gamepad.vibrationActuator;
-            this.#formattedGamepads[gamepadId].vibrate = d => this.#vibrate(d, gamepad);
+            this.#formattedGamepads[gamepadId].vibrate = (d, v) => this.#vibrate(d, v, gamepad);
         }
     }
 
@@ -38,8 +39,6 @@ export class Gamepad extends EventTarget {
 
     #onGamepadConnected = e => {
         console.log('---- #onGamepadConnected', e.gamepad.index, e.gamepad.id);
-        this.#gamepads = this.#getGamepads();
-        console.log(this.#gamepads);
         this.#connected = true;
         this.#init();
     }
@@ -50,15 +49,8 @@ export class Gamepad extends EventTarget {
     }
 
     #getController(id) {
-        let gp;
-        this.#gamepads = this.#getGamepads();
-        for (let gpindex in this.#gamepads) {
-            gp = this.#gamepads[gpindex];
-            if (gp && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)) {
-                break;
-            }
-        }
-        return gp;
+        const gamepads = this.#getGamepads();
+        return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
     }
 
     update = f => {
@@ -73,9 +65,9 @@ export class Gamepad extends EventTarget {
                 continue;
             }
             const {mapping} = this.#gamepadInfo[gamepadId];
-            this.#buttons = {}
 
-            this.#formattedGamepads[gamepadId].pose = gamepad.pose;
+            const formattedGamepad = this.#formattedGamepads[gamepadId]
+            formattedGamepad.pose = gamepad.pose;
 
 
             for (let buttonName in mapping.buttons) {
@@ -84,29 +76,29 @@ export class Gamepad extends EventTarget {
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
-
                 const button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
 
-                this.#buttons[buttonName].pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                this.#buttons[buttonName].angle = Math.atan2(button.y, button.x);
+                button.pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                button.angle = Math.atan2(button.y, button.x);
             }
 
-            this.#formattedGamepads[gamepadId].buttons = this.#buttons;
+            formattedGamepad.buttons = this.#buttons;
 
             f(this.#formattedGamepads)
         }
     }
 
-    #vibrate(duration, gamepad) {
+    #vibrate(duration, intensity, gamepad) {
         if (gamepad.vibrates) {
             return
         }
+        intensity ||= 1;
         gamepad.vibrates = true
-        gamepad.vibrationActuator.playEffect("dual-rumble", {
+        gamepad.vibrationActuator.playEffect('dual-rumble', {
             startDelay: 0,
             duration: duration,
             weakMagnitude: .1,
-            strongMagnitude: 1.0,
+            strongMagnitude: intensity,
         }).then(() => {
             gamepad.vibrates = false
         });
