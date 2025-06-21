@@ -19,10 +19,12 @@ const gamepadInfo = {
 };
 
 const gamepad = new Gamepad(gamepadInfo)
+const output = document.getElementById('output');
 
 
 function update() {
     requestAnimationFrame(update);
+    output.innerText = '';
     gamepad.update(gamepads => {
         const { left, right, standard: xbox, remote } = gamepads;
 
@@ -33,76 +35,76 @@ function update() {
             const { LJX, RJX } = buttons;
 
             if (A.pressed) {
-                console.log('---- A PRESSED');
-            }
-
-            if (A.pressed && B.pressed) {
-                xbox.vibrate(2000)
-            }
-
-            if (Y.pressed) {
-                console.log('---- Y PRESSED');
+                output.innerText += 'A PRESSED\n'
             }
 
             if (B.pressed) {
-                console.log('---- B PRESSED');
+                output.innerText += 'B PRESSED\n'
+            }
+
+            if (A.pressed && B.pressed) {
+                xbox.vibrate(100)
+            }
+
+            if (Y.pressed) {
+                output.innerText += 'Y PRESSED\n'
             }
 
             if (X.pressed) {
-                console.log('---- X PRESSED');
+                output.innerText += 'X PRESSED\n'
             }
 
             if (LB.pressed) {
-                console.log('---- LB PRESSED');
+                output.innerText += 'LB PRESSED\n'
             }
             if (RB.pressed) {
-                console.log('---- RB PRESSED');
+                output.innerText += 'RB PRESSED\n'
             }
             if (LT.pressed) {
-                console.log('---- LT PRESSED', LT);
+                output.innerText += 'LT PRESSED\n'
                 xbox.vibrate(100, LT.value)
             }
             if (RT.pressed) {
-                console.log('---- RT PRESSED');
+                output.innerText += 'RT PRESSED\n'
                 xbox.vibrate(100, RT.value)
             }
             if (VIEW.pressed) {
-                console.log('---- VIEW PRESSED');
+                output.innerText += 'VIEW PRESSED\n'
             }
             if (MENU.pressed) {
-                console.log('---- MENU PRESSED');
+                output.innerText += 'MENU PRESSED\n'
             }
             // LJB, RJB, UP, DOWN, LEFT, RIGHT
             if (LJB.pressed) {
-                console.log('---- LJB PRESSED');
+                output.innerText += 'LJB PRESSED\n'
             }
 
             if (RJB.pressed) {
-                console.log('---- RJB PRESSED');
+                output.innerText += 'RJB PRESSED\n'
             }
 
             if (UP.pressed) {
-                console.log('---- UP PRESSED');
+                output.innerText += 'UP PRESSED\n'
             }
 
             if (DOWN.pressed) {
-                console.log('---- DOWN PRESSED');
+                output.innerText += 'DOWN PRESSED\n'
             }
 
             if (LEFT.pressed) {
-                console.log('---- LEFT PRESSED');
+                output.innerText += 'LEFT PRESSED\n'
             }
 
             if (RIGHT.pressed) {
-                console.log('---- RIGHT PRESSED');
+                output.innerText += 'RIGHT PRESSED\n'
             }
 
             // const {LJX, RJX} = axes;
             if (LJX.pressed) {
-                console.log('---- LJX PRESSED', LJX);
+                output.innerText += 'LJX PRESSED\n'
             }
             if (RJX.pressed) {
-                console.log('---- RJX PRESSED', RJX);
+                output.innerText += 'RJX PRESSED\n'
             }
 
 

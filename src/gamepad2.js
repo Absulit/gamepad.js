@@ -1,3 +1,18 @@
+/**
+ * @author Sebastián Sanabria Díaz
+ * Gamepad controls loosely based on this MDN link:
+ * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
+ * https://developers.google.com/web/fundamentals/vr/adding-input-to-a-webvr-scene/
+
+    Haptics:
+    https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
+    view-source:https://toji.github.io/webvr-samples/XX-vr-controllers.html
+ * chrome://flags
+ */
+
+/**
+ * Gamepad
+ */
 export class Gamepad extends EventTarget {
     static instance;
     static PRESSED = 'PRESSED';
@@ -13,6 +28,8 @@ export class Gamepad extends EventTarget {
         Gamepad.instance = this;
         this.#gamepadInfo = gamepadInfo;
 
+        //https://twitter.com/Tojiro/status/807758580791197696
+        //console.log(navigator.getVRDisplays() );
         window.addEventListener('gamepadconnected', this.#onGamepadConnected);
         window.addEventListener("gamepaddisconnected", this.#onGamepadDisconnected);
     }
