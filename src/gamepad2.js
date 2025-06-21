@@ -1,7 +1,6 @@
 export class Gamepad extends EventTarget {
     static instance;
     static PRESSED = 'PRESSED';
-    #gamepads = null;
     #connected = false;
     #gamepadInfo = null;
     #formattedGamepads = {}; // TODO use Map
@@ -18,18 +17,20 @@ export class Gamepad extends EventTarget {
         window.addEventListener("gamepaddisconnected", this.#onGamepadDisconnected);
     }
 
-    #init(){
+    #init() {
+        const gamepads = this.#getGamepads();
         for (let gamepadId in this.#gamepadInfo) {
-            const gamepad = this.#getController(gamepadId)
+            const gamepad = this.#findGamepad(gamepadId, gamepads)
 
             if (!gamepad) {
                 continue;
             }
 
             this.#formattedGamepads[gamepadId] = {}
-            this.#formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
-            this.#formattedGamepads[gamepadId].vibrationActuator = gamepad.vibrationActuator;
-            this.#formattedGamepads[gamepadId].vibrate = (d, v) => this.#vibrate(d, v, gamepad);
+            const formattedGamepad = this.#formattedGamepads[gamepadId];
+            formattedGamepad.haptics = gamepad.hapticActuators;
+            formattedGamepad.vibrationActuator = gamepad.vibrationActuator;
+            formattedGamepad.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
         }
     }
 
@@ -48,8 +49,7 @@ export class Gamepad extends EventTarget {
         this.#connected = false;
     }
 
-    #getController(id) {
-        const gamepads = this.#getGamepads();
+    #findGamepad(id, gamepads) {
         return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
     }
 
@@ -58,13 +58,14 @@ export class Gamepad extends EventTarget {
             return;
         }
 
+        const gamepads = this.#getGamepads();
         for (let gamepadId in this.#gamepadInfo) {
-            const gamepad = this.#getController(gamepadId)
+            const gamepad = this.#findGamepad(gamepadId, gamepads);
 
             if (!gamepad) {
                 continue;
             }
-            const {mapping} = this.#gamepadInfo[gamepadId];
+            const { mapping } = this.#gamepadInfo[gamepadId];
 
             const formattedGamepad = this.#formattedGamepads[gamepadId]
             formattedGamepad.pose = gamepad.pose;
