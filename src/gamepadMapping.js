@@ -7,7 +7,7 @@
 
 */
 
-const rightMapping = {
+export const rightMapping = {
     buttons: {
         RJB: 0,
         INDEX: 1,
@@ -23,7 +23,7 @@ const rightMapping = {
 
 };
 
-const leftMapping = {
+export const leftMapping = {
     buttons: {
         LJB: 0,
         INDEX: 1,
@@ -39,7 +39,7 @@ const leftMapping = {
 
 };
 
-const xboxMapping = {
+export const xboxMapping = {
     buttons: {
         A: 0,
         B: 1,
@@ -68,7 +68,7 @@ const xboxMapping = {
     }
 };
 
-const remoteMapping = {
+export const remoteMapping = {
     buttons: {
         SELECT: 0,
         BACK: 1,
@@ -92,7 +92,7 @@ const remoteMapping = {
 
 */
 
-const gamepadInfo = {
+export const gamepadInfo = {
     xbox: {
         mapping: xboxMapping
     },

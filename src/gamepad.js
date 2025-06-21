@@ -10,135 +10,117 @@
  * chrome://flags
  */
 
-/*global THREE, TWEEN, ABSULIT, Stats, camera, scene, loader, console, window, document */
-
-var ABSULIT = ABSULIT || {};
-ABSULIT.gamepad = ABSULIT.gamepad || (function () {
-    'use strict';
-    var object = {},
-        gamepad = null,
-        gamepads = {},
-        gamepadConnected = false;
-
-    var onGamepadPressedLocal,
-        onUpdateLocal,
-        gamepadInfoLocal,
-        buttons = {},
-        formattedGamepads = {};
-
-
-    object.init = function (gamepadInfo /*gamepadIdList*/, onGamepadPressed, onUpdate) {
-        onGamepadPressedLocal = onGamepadPressed;
-        onUpdateLocal = onUpdate;
-        gamepadInfoLocal = gamepadInfo;
+/**
+ * Gamepad
+ */
+export class Gamepad extends EventTarget {
+    static instance;
+    static PRESSED = 'PRESSED';
+    #connected = false;
+    #gamepadInfo = null;
+    #formattedGamepads = {}; // TODO use Map
+    #buttons = {};
+    constructor(gamepadInfo) {
+        super();
+        if (Gamepad.instance) {
+            return Gamepad.instance;
+        }
+        Gamepad.instance = this;
+        this.#gamepadInfo = gamepadInfo;
 
         //https://twitter.com/Tojiro/status/807758580791197696
         //console.log(navigator.getVRDisplays() );
-
-        window.addEventListener("gamepadconnected", function(e) {
-
-            gamepads = getGamepads();
-            console.log(gamepads);
-            gamepad = getController(gamepads, 'standard');
-            console.log(gamepad);
-            gamepadConnected = !!gamepad;
-            console.log(e, gamepadConnected);
-        });
-
-        window.addEventListener("gamepaddisconnected", function(e) {
-          console.log("Gamepad disconnected from index %d: %s",
-            e.gamepad.index, e.gamepad.id);
-
-            gamepadConnected = false;
-        });
-
-        gamepads = getGamepads();
-        gamepad = getController(gamepads, 'xbox');
-        gamepadConnected = !!gamepad;
-        console.log("---- gamepadConnected: ", gamepadConnected);
-
-        window.addEventListener("gamepadconnected", function(e) { gamepadHandler(e, true); }, false);
-        window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(e, false); }, false);
-    };
-
-    /* -------------------- */
-
-    function gamepadHandler(event, connecting) {
-      var gamepad = event.gamepad;
-      // Note:
-      // gamepad === navigator.getGamepads()[gamepad.index]
-
-      if (connecting) {
-        gamepads[gamepad.index] = gamepad;
-      } else {
-        delete gamepads[gamepad.index];
-      }
+        window.addEventListener('gamepadconnected', this.#onGamepadConnected);
+        window.addEventListener("gamepaddisconnected", this.#onGamepadDisconnected);
     }
 
-    /* -------------------- */
+    #init() {
+        const gamepads = this.#getGamepads();
+        for (let gamepadId in this.#gamepadInfo) {
+            const gamepad = this.#findGamepad(gamepadId, gamepads)
 
-    function getGamepads(){
-        return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-    }
-
-    function getController(gamepads, id){
-        // console.log(gamepads, id);
-        var gp, gpindex;
-        for(gpindex in gamepads){
-            gp = gamepads[gpindex];
-            //console.log(gp);
-            // console.log('---- gp.id',gp?.id, gp?.id.toLowerCase().indexOf(id));
-            if(gp !== null && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)){
-                break;
-            }
-        }
-        return gp;
-    }
-
-
-    var gamepadId,
-        button;
-    object.update = function () {
-        //gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-        gamepads = getGamepads();
-
-        /* -------------------- */
-        for(gamepadId in gamepadInfoLocal){
-            buttons = {};
-            //gamepadId = gamepadIdListLocal[gamepadIdListIndex].gamepadId;
-            var mapping = gamepadInfoLocal[gamepadId].mapping;
-            gamepad = getController(gamepads, gamepadId);
-            // console.log(gamepad);
-
-            if(gamepadConnected && gamepad?.buttons){
-
-                formattedGamepads[gamepadId] = {};
-                formattedGamepads[gamepadId].pose = gamepad.pose;
-
-
-                for (var buttonName in mapping.buttons){
-                    buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
-                }
-                for(var buttonName in mapping.axes){
-                    var mappingButton = mapping.axes[buttonName];
-
-                    button = buttons[buttonName] = {x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y]};
-                    buttons[buttonName].pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                    buttons[buttonName].angle = Math.atan2(button.y, button.x);
-                }
-
-                formattedGamepads[gamepadId].buttons = buttons;
-                formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
-
+            if (!gamepad) {
+                continue;
             }
 
+            this.#formattedGamepads[gamepadId] = {}
+            const formattedGamepad = this.#formattedGamepads[gamepadId];
+            formattedGamepad.haptics = gamepad.hapticActuators;
+            formattedGamepad.vibrationActuator = gamepad.vibrationActuator;
+            formattedGamepad.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
         }
-        onGamepadPressedLocal(formattedGamepads);
+    }
 
-        /* -------------------- */
-        onUpdateLocal(formattedGamepads);
-    };
+    #getGamepads() {
+        return navigator.getGamepads();
+    }
 
-    return object;
+    #onGamepadConnected = e => {
+        console.log('---- #onGamepadConnected', e.gamepad.index, e.gamepad.id);
+        this.#connected = true;
+        this.#init();
+    }
 
-})();
+    #onGamepadDisconnected = e => {
+        console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
+        this.#connected = false;
+    }
+
+    #findGamepad(id, gamepads) {
+        return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
+    }
+
+    update = f => {
+        if (!this.#connected) {
+            return;
+        }
+
+        const gamepads = this.#getGamepads();
+        for (let gamepadId in this.#gamepadInfo) {
+            const gamepad = this.#findGamepad(gamepadId, gamepads);
+
+            if (!gamepad) {
+                continue;
+            }
+            const { mapping } = this.#gamepadInfo[gamepadId];
+
+            const formattedGamepad = this.#formattedGamepads[gamepadId]
+            formattedGamepad.pose = gamepad.pose;
+
+
+            for (let buttonName in mapping.buttons) {
+                this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+            }
+
+            for (let buttonName in mapping.axes) {
+                const mappingButton = mapping.axes[buttonName];
+                const button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+
+                button.pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                button.angle = Math.atan2(button.y, button.x);
+            }
+
+            formattedGamepad.buttons = this.#buttons;
+
+            f(this.#formattedGamepads)
+        }
+    }
+
+    #vibrate(duration, intensity, gamepad) {
+        if (gamepad.vibrates) {
+            return
+        }
+        intensity ||= 1;
+        gamepad.vibrates = true
+        gamepad.vibrationActuator.playEffect('dual-rumble', {
+            startDelay: 0,
+            duration: duration,
+            weakMagnitude: .1,
+            strongMagnitude: intensity,
+        }).then(() => {
+            gamepad.vibrates = false
+        });
+    }
+}
+
+

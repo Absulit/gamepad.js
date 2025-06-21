@@ -1,14 +1,9 @@
-
-/*
-    Each controller has an String ID, use a key of the string to find the controller.
-    In this example the left and right Touch Controllers, the remote and the XBOX controllers.
-
-    Note: the mapping variables are in src/gamepadMapping.js
-*/
+import { Gamepad } from "../src/gamepad.js";
+import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
 
 
-var gamepadInfo = {
+const gamepadInfo = {
     standard: {
         mapping: xboxMapping
     },
@@ -23,91 +18,99 @@ var gamepadInfo = {
     }
 };
 
-/*
-    Fired every time a button is pressed, no matter which
+const gamepad = new Gamepad(gamepadInfo)
+const output = document.getElementById('output');
 
-*/
-var onGamepadPressed = function (gamepads) {
-    // console.log(gamepads);
-
-    // The same keys used in gamepadInfo are used to retrieve the gamepad
-    var left = gamepads.left;
-    var right = gamepads.right;
-    var xbox = gamepads.standard;
-    var remote = gamepads.remote;
-
-
-    if (xbox) {
-        var buttons = xbox.buttons;
-        if (buttons.A.pressed) {
-            // Fire the XBOX haptic vibration
-            // xbox.haptics[1].pulse(1, 100);
-            console.log('---- A PRESSED');
-
-        }
-
-        if (buttons.Y.pressed) {
-            // TODO custom code
-        }
-    }
-
-
-    if (remote) {
-        var buttons = remote.buttons;
-
-        if (buttons.SELECT.pressed) {
-            // Fire the XBOX haptic from the remote controller
-            xbox.haptics[0].pulse(1, 100);
-        }
-    }
-
-
-
-
-    // Threejs Mesh called handLeft and handRight for the Touch Controllers hands
-    // handLeft.position.fromArray(left.pose.position);
-    // handLeft.quaternion.fromArray(left.pose.orientation);
-
-
-    // handRight.position.fromArray(right.pose.position);
-    // handRight.quaternion.fromArray(right.pose.orientation);
-};
-
-/*
-    If the Pressed is not enough, you can call the values on an Update
-*/
-
-var onUpdate = function (gamepads) {
-    // console.log(gamepads);
-
-};
-
-
-
-ABSULIT.gamepad.init(gamepadInfo, onGamepadPressed, onUpdate);
-
-/**********************/
-
-/*
-    The update function is the animate() in Threejs.
-    It is called via requestAnimationFrame(), so it is called as many times as the
-    available hardware/display in Hertz
-*/
 
 function update() {
     requestAnimationFrame(update);
-    ABSULIT.gamepad.update();
+    output.innerText = '';
+    gamepad.update(gamepads => {
+        const { left, right, standard: xbox, remote } = gamepads;
+
+        if (xbox) {
+            const { buttons } = xbox;
+            const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
+            const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
+            const { LJX, RJX } = buttons;
+
+            if (A.pressed) {
+                output.innerText += 'A PRESSED\n'
+            }
+
+            if (B.pressed) {
+                output.innerText += 'B PRESSED\n'
+            }
+
+            if (A.pressed && B.pressed) {
+                xbox.vibrate(100)
+            }
+
+            if (Y.pressed) {
+                output.innerText += 'Y PRESSED\n'
+            }
+
+            if (X.pressed) {
+                output.innerText += 'X PRESSED\n'
+            }
+
+            if (LB.pressed) {
+                output.innerText += 'LB PRESSED\n'
+            }
+            if (RB.pressed) {
+                output.innerText += 'RB PRESSED\n'
+            }
+            if (LT.pressed) {
+                output.innerText += 'LT PRESSED\n'
+                xbox.vibrate(100, LT.value)
+            }
+            if (RT.pressed) {
+                output.innerText += 'RT PRESSED\n'
+                xbox.vibrate(100, RT.value)
+            }
+            if (VIEW.pressed) {
+                output.innerText += 'VIEW PRESSED\n'
+            }
+            if (MENU.pressed) {
+                output.innerText += 'MENU PRESSED\n'
+            }
+            // LJB, RJB, UP, DOWN, LEFT, RIGHT
+            if (LJB.pressed) {
+                output.innerText += 'LJB PRESSED\n'
+            }
+
+            if (RJB.pressed) {
+                output.innerText += 'RJB PRESSED\n'
+            }
+
+            if (UP.pressed) {
+                output.innerText += 'UP PRESSED\n'
+            }
+
+            if (DOWN.pressed) {
+                output.innerText += 'DOWN PRESSED\n'
+            }
+
+            if (LEFT.pressed) {
+                output.innerText += 'LEFT PRESSED\n'
+            }
+
+            if (RIGHT.pressed) {
+                output.innerText += 'RIGHT PRESSED\n'
+            }
+
+            // const {LJX, RJX} = axes;
+            if (LJX.pressed) {
+                output.innerText += 'LJX PRESSED\n'
+            }
+            if (RJX.pressed) {
+                output.innerText += 'RJX PRESSED\n'
+            }
+
+
+
+        }
+
+    });
 }
 update();
-
-
-// gamepad.buttons.A.addEventListener('pressed', e => {
-
-// })
-
-// gamepad.axes
-
-
-
-
-
