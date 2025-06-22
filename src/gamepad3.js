@@ -18,7 +18,6 @@ export class Gamepad extends EventTarget {
     static PRESSED = 'PRESSED';
     static CONNECTED = 'CONNECTED';
     static DISCONNECTED = 'DISCONNECTED';
-    #connected = false;
     #gamepadInfo = null;
     #formattedGamepads = {};
     #buttons = {};
@@ -41,7 +40,14 @@ export class Gamepad extends EventTarget {
         const { gamepad } = e;
         const { index, id } = gamepad;
         console.log('---- #onGamepadConnected', index, id);
-        this.#formattedGamepads[`control${index}`] = { index };
+        console.log('---- #onGamepadConnected', gamepad);
+        const fg = this.#formattedGamepads[`control${index}`] = { index };
+
+        fg.haptics = gamepad.hapticActuators;
+        fg.vibrationActuator = gamepad.vibrationActuator;
+        fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
+
+
         this.dispatchEvent(new Event(Gamepad.CONNECTED));
     }
 
@@ -62,14 +68,20 @@ export class Gamepad extends EventTarget {
     update = f => {
 
         const gamepads = this.#getGamepads();
-        for(let key in this.#formattedGamepads){
+        for (let key in this.#formattedGamepads) {
             const fg = this.#formattedGamepads[key];
             const gamepad = gamepads[fg.index];
-            const { mapping } = this.#gamepadInfo[gamepad.id];
-            // console.log(mapping);
+            const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+
+            if(!mapping){
+                return
+            }
+
+            // console.log(gamepad.buttons.filter(b => b.pressed));
+            // console.log(gamepad.axes);
+
 
             fg.pose = gamepad.pose;
-
 
             for (let buttonName in mapping.buttons) {
                 this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
@@ -90,7 +102,20 @@ export class Gamepad extends EventTarget {
 
     }
 
+    #vibrate(duration, intensity, gamepad) {
+        if (gamepad.vibrates) {
+            return
+        }
+        intensity ||= 1;
+        gamepad.vibrates = true
+        gamepad.vibrationActuator?.playEffect('dual-rumble', {
+            startDelay: 0,
+            duration: duration,
+            weakMagnitude: .1,
+            strongMagnitude: intensity,
+        }).then(() => {
+            gamepad.vibrates = false
+        });
+    }
 
 }
-
-
