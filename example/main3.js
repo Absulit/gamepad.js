@@ -1,10 +1,10 @@
-import { Gamepad } from "../src/gamepad.js";
+import { Gamepad } from "../src/gamepad3.js";
 import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
 
 
 const gamepadInfo = {
-    '045e': {
+    'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping
     },
     right: {
@@ -18,27 +18,43 @@ const gamepadInfo = {
     }
 };
 
-const gamepad = new Gamepad(gamepadInfo)
+
+const g = new Gamepad(gamepadInfo)
+
 const output = document.getElementById('output');
 console.log(output);
+
+// let count = 0;
+g.addEventListener(Gamepad.CONNECTED, e => {
+    console.log('---- Gamepad.CONNECTED');
+
+    // e.target // the one connected
+    // e.target.id // uuid
+    // e.target.name = 'control' + count++
+})
+
+g.addEventListener(Gamepad.DISCONNECTED, e => {
+    console.log('---- Gamepad.DISCONNECTED');
+    e.target // the one disconnected
+})
 
 
 function update() {
     requestAnimationFrame(update);
 
     output.innerText = '';
-    gamepad.update(gamepads => {
-        const { left, right, '045e': xbox, remote } = gamepads;
+    g.update(gamepads => {
+        const { control0 } = gamepads;
 
-        if (xbox) {
-            const { buttons } = xbox;
+        if (control0) {
+            const { buttons } = control0;
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
 
-            if (A.pressed) {
-                console.log('A');
+            gamepads.control0?.buttons.A.pressed && console.log('A');
 
+            if (A.pressed) {
                 output.innerText += 'A PRESSED\n'
             }
 
@@ -47,7 +63,7 @@ function update() {
             }
 
             if (A.pressed && B.pressed) {
-                xbox.vibrate(100)
+                control0.vibrate(100)
             }
 
             if (Y.pressed) {
@@ -66,11 +82,11 @@ function update() {
             }
             if (LT.pressed) {
                 output.innerText += 'LT PRESSED\n'
-                xbox.vibrate(100, LT.value)
+                control0.vibrate(100, LT.value)
             }
             if (RT.pressed) {
                 output.innerText += 'RT PRESSED\n'
-                xbox.vibrate(100, RT.value)
+                control0.vibrate(100, RT.value)
             }
             if (VIEW.pressed) {
                 output.innerText += 'VIEW PRESSED\n'
@@ -110,11 +126,13 @@ function update() {
             if (RJX.pressed) {
                 output.innerText += 'RJX PRESSED\n'
             }
-
-
-
         }
 
-    });
+
+    })
+
+    // g.gamepads.control0.A.pressed
+
 }
-update();
+
+update()
