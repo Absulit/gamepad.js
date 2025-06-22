@@ -28,7 +28,6 @@ export const xboxMappingFirefox = {
         LJX: { x: 0, y: 1 },
         RJX: { x: 2, y: 3 },
         LT: 4,
-        RT: 5,
     }
 };
 
@@ -58,17 +57,27 @@ console.log(output);
 
 // let count = 0;
 g.addEventListener(Gamepad.CONNECTED, e => {
-    console.log('---- Gamepad.CONNECTED');
+    console.log('---- Gamepad.CONNECTED', e);
 
     // e.target // the one connected
     // e.target.id // uuid
     // e.target.name = 'control' + count++
+
+    // const control0 = e.detail
+    // console.log(control0.buttons)
+
+    // control0.buttons.A.addEventListener(Gamepad.PRESSED, e => {
+    //     console.log('A - PRESSED');
+    // })
+
+
 })
 
 g.addEventListener(Gamepad.DISCONNECTED, e => {
     console.log('---- Gamepad.DISCONNECTED');
     e.target // the one disconnected
 })
+
 
 
 function update() {
@@ -83,7 +92,6 @@ function update() {
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
-            const { TRIGGERS, TEST } = buttons;
 
             if (A.touched) {
                 output.innerText += 'A PRESSED\n'
@@ -113,7 +121,6 @@ function update() {
                 output.innerText += 'RB PRESSED\n'
             }
 
-
             if (LT.touched) {
                 output.innerText += 'LT PRESSED\n'
                 control0.vibrate(100, LT.value)
@@ -122,10 +129,6 @@ function update() {
                 output.innerText += 'RT PRESSED\n'
                 control0.vibrate(100, RT.value)
             }
-
-
-
-
 
             if (VIEW.touched) {
                 output.innerText += 'VIEW PRESSED\n'
@@ -159,9 +162,9 @@ function update() {
             }
 
             // const {LJX, RJX} = axes;
+
             if (LJX.touched) {
                 console.log(LJX);
-
                 output.innerText += 'LJX PRESSED\n'
             }
             if (RJX.touched) {
@@ -173,7 +176,7 @@ function update() {
 
     })
 
-    // g.gamepads.control0.A.pressed
+
 
 }
 

@@ -41,14 +41,23 @@ export class Gamepad extends EventTarget {
         const { index, id } = gamepad;
         console.log('---- #onGamepadConnected', index, id);
         console.log('---- #onGamepadConnected', gamepad);
-        const fg = this.#formattedGamepads[`control${index}`] = { index };
+        const fg = this.#formattedGamepads[`control${index}`] = { index, buttons: {} };
 
         fg.haptics = gamepad.hapticActuators;
         fg.vibrationActuator = gamepad.vibrationActuator;
         fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
 
 
-        this.dispatchEvent(new Event(Gamepad.CONNECTED));
+
+        const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+        for (let buttonName in mapping.buttons) {
+        }
+        for (let buttonName in mapping.axes) {
+        }
+
+        this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, {
+            detail: fg
+        }));
     }
 
     #onGamepadDisconnected = e => {
@@ -66,7 +75,7 @@ export class Gamepad extends EventTarget {
     }
 
     #isObject = v => {
-        typeof v === 'object' && v !== null;
+        return typeof v === 'object' && v !== null;
     }
 
     update = f => {
@@ -88,16 +97,26 @@ export class Gamepad extends EventTarget {
             fg.pose = gamepad.pose;
 
             for (let buttonName in mapping.buttons) {
-                this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+                const button = this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+
+                // if (button.touched && !button.pressed) {
+                //     button.dispatchEvent(Gamepad.PRESSED)
+                //     button._pressed = true;
+                // } else {
+                //     button._pressed = false;
+                // }
             }
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
                 const isObject = this.#isObject(mappingButton);
 
-                let button = this.#buttons[buttonName] ;
+                let button = this.#buttons[buttonName];
+                // console.log(button, buttonName, isObject, mappingButton, mapping.axes);
+
                 if (isObject) {
                     button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+                    button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
                     button.angle = Math.atan2(button.y, button.x);
                 } else {
                     const value = gamepad.axes[mappingButton];
@@ -105,6 +124,13 @@ export class Gamepad extends EventTarget {
                     // TODO: set flag in button for zero
                     // meaning initialize this this.#buttons[buttonName] with {} on init
                     button.touched = -.9 < value;
+
+                    // if (button.touched && !button.pressed) {
+                    //     button.dispatchEvent(Gamepad.PRESSED)
+                    //     button._pressed = true;
+                    // } else {
+                    //     button._pressed = false;
+                    // }
                 }
 
             }
