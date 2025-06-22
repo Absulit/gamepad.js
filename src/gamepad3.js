@@ -65,6 +65,10 @@ export class Gamepad extends EventTarget {
         return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
     }
 
+    #isObject = v => {
+        typeof v === 'object' && v !== null;
+    }
+
     update = f => {
 
         const gamepads = this.#getGamepads();
@@ -73,7 +77,7 @@ export class Gamepad extends EventTarget {
             const gamepad = gamepads[fg.index];
             const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
 
-            if(!mapping){
+            if (!mapping) {
                 return
             }
 
@@ -89,10 +93,20 @@ export class Gamepad extends EventTarget {
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
-                const button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+                const isObject = this.#isObject(mappingButton);
 
-                button.pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                button.angle = Math.atan2(button.y, button.x);
+                let button = this.#buttons[buttonName] ;
+                if (isObject) {
+                    button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+                    button.angle = Math.atan2(button.y, button.x);
+                } else {
+                    const value = gamepad.axes[mappingButton];
+                    button = this.#buttons[buttonName] = { value }
+                    // TODO: set flag in button for zero
+                    // meaning initialize this this.#buttons[buttonName] with {} on init
+                    button.touched = -.9 < value;
+                }
+
             }
 
             fg.buttons = this.#buttons;

@@ -10,8 +10,8 @@ export const xboxMappingFirefox = {
 
         LB: 4,
         RB: 5,
-        LT: 6,
-        RT: 7,
+        // LT: 6,
+        // RT: 7,
 
         VIEW: 8,
         MENU: 9,
@@ -26,7 +26,9 @@ export const xboxMappingFirefox = {
     },
     axes: {
         LJX: { x: 0, y: 1 },
-        RJX: { x: 2, y: 3 }
+        RJX: { x: 2, y: 3 },
+        LT: 4,
+        RT: 5,
     }
 };
 
@@ -81,77 +83,89 @@ function update() {
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
+            const { TRIGGERS, TEST } = buttons;
 
-            if (A.pressed) {
+            if (A.touched) {
                 output.innerText += 'A PRESSED\n'
+
             }
 
-            if (B.pressed) {
+            if (B.touched) {
                 output.innerText += 'B PRESSED\n'
             }
 
-            if (A.pressed && B.pressed) {
+            if (A.touched && B.touched) {
                 control0.vibrate(100)
             }
 
-            if (Y.pressed) {
+            if (Y.touched) {
                 output.innerText += `Y PRESSED ${Y.id}\n`
             }
 
-            if (X.pressed) {
+            if (X.touched) {
                 output.innerText += `X PRESSED ${X.id}\n`
             }
 
-            if (LB.pressed) {
+            if (LB.touched) {
                 output.innerText += 'LB PRESSED\n'
             }
-            if (RB.pressed) {
+            if (RB.touched) {
                 output.innerText += 'RB PRESSED\n'
             }
-            if (LT.pressed) {
+
+
+            if (LT.touched) {
                 output.innerText += 'LT PRESSED\n'
                 control0.vibrate(100, LT.value)
             }
-            if (RT.pressed) {
+            if (RT.touched) {
                 output.innerText += 'RT PRESSED\n'
                 control0.vibrate(100, RT.value)
             }
-            if (VIEW.pressed) {
+
+
+
+
+
+            if (VIEW.touched) {
                 output.innerText += 'VIEW PRESSED\n'
             }
-            if (MENU.pressed) {
+            if (MENU.touched) {
                 output.innerText += 'MENU PRESSED\n'
             }
             // LJB, RJB, UP, DOWN, LEFT, RIGHT
-            if (LJB.pressed) {
+            if (LJB.touched) {
                 output.innerText += 'LJB PRESSED\n'
             }
 
-            if (RJB.pressed) {
+            if (RJB.touched) {
                 output.innerText += 'RJB PRESSED\n'
             }
 
-            if (UP.pressed) {
+            if (UP.touched) {
                 output.innerText += 'UP PRESSED\n'
             }
 
-            if (DOWN.pressed) {
+            if (DOWN.touched) {
                 output.innerText += 'DOWN PRESSED\n'
             }
 
-            if (LEFT.pressed) {
+            if (LEFT.touched) {
                 output.innerText += 'LEFT PRESSED\n'
             }
 
-            if (RIGHT.pressed) {
+            if (RIGHT.touched) {
                 output.innerText += 'RIGHT PRESSED\n'
             }
 
             // const {LJX, RJX} = axes;
-            if (LJX.pressed) {
+            if (LJX.touched) {
+                console.log(LJX);
+
                 output.innerText += 'LJX PRESSED\n'
             }
-            if (RJX.pressed) {
+            if (RJX.touched) {
+                console.log(RJX);
                 output.innerText += 'RJX PRESSED\n'
             }
         }
