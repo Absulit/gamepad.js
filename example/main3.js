@@ -49,7 +49,6 @@ const gamepadInfo = {
     }
 };
 
-
 const g = new Gamepad(gamepadInfo)
 
 const output = document.getElementById('output');
@@ -60,19 +59,21 @@ g.addEventListener(Gamepad.CONNECTED, e => {
 
     const control0 = e.detail
     console.log(control0.buttons)
+    const { A, RJX } = control0.buttons;
 
-    control0.buttons.A.addEventListener(Button.PUSHED, e => {
+    A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
     })
-    control0.buttons.A.addEventListener(Button.RELEASED, e => {
+
+    A.addEventListener(Button.RELEASED, e => {
         console.log('A - RELEASED');
     })
 
-    control0.buttons.RJX.addEventListener(Button.PUSHED, e => {
+    RJX.addEventListener(Button.PUSHED, e => {
         console.log('RJX - PUSHED');
     })
 
-    control0.buttons.RJX.addEventListener(Button.RELEASED, e => {
+    RJX.addEventListener(Button.RELEASED, e => {
         console.log('RJX - RELEASED');
     })
 })

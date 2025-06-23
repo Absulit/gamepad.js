@@ -11,7 +11,7 @@
  */
 
 /**
- * Gamepad
+ * Button
  */
 
 export class Button extends EventTarget {
@@ -25,7 +25,7 @@ export class Button extends EventTarget {
     }
 
     /**
-     *
+     * To copy properties from the Gamepad API button
      * @param {Object} v
      */
     setProperties(v) {
@@ -47,6 +47,9 @@ export class Button extends EventTarget {
         }
     }
 }
+/**
+ * Gamepad
+ */
 
 export class Gamepad extends EventTarget {
     static instance;
@@ -54,8 +57,6 @@ export class Gamepad extends EventTarget {
     static DISCONNECTED = 'DISCONNECTED';
     #gamepadInfo = null;
     #formattedGamepads = {};
-    #buttons = {};
-    #gamepads = {}
     constructor(gamepadInfo) {
         super();
         if (Gamepad.instance) {
@@ -81,20 +82,15 @@ export class Gamepad extends EventTarget {
         fg.vibrationActuator = gamepad.vibrationActuator;
         fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
 
-
-
         const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
         for (let buttonName in mapping.buttons) {
-            this.#buttons[buttonName] = new Button();
+            fg.buttons[buttonName] = new Button();
         }
         for (let buttonName in mapping.axes) {
-            this.#buttons[buttonName] = new Button();
+            fg.buttons[buttonName] = new Button();
         }
-        fg.buttons = this.#buttons;
 
-        this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, {
-            detail: fg
-        }));
+        this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, { detail: fg }));
     }
 
     #onGamepadDisconnected = e => {
@@ -112,29 +108,23 @@ export class Gamepad extends EventTarget {
     }
 
     update = f => {
-
         const gamepads = this.#getGamepads();
         for (let key in this.#formattedGamepads) {
             const fg = this.#formattedGamepads[key];
             const gamepad = gamepads[fg.index];
+
             const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
 
             if (!mapping) {
                 return
             }
 
-            // console.log(gamepad.buttons.filter(b => b.pressed));
-            // console.log(gamepad.axes);
-
-
             fg.pose = gamepad.pose;
 
             for (let buttonName in mapping.buttons) {
                 const gamepadButton = gamepad.buttons[mapping.buttons[buttonName]];
-                const button = this.#buttons[buttonName];
+                const button = fg.buttons[buttonName];
                 button.setProperties(gamepadButton)
-
-                // console.log(gamepadButton.pushed);
                 button.dispatchEventIfPushed();
             }
 
@@ -142,17 +132,16 @@ export class Gamepad extends EventTarget {
                 const mappingButton = mapping.axes[buttonName];
                 const isObject = this.#isObject(mappingButton);
 
-                let button = this.#buttons[buttonName];
-                // console.log(button, buttonName, isObject, mappingButton, mapping.axes);
+                let button = fg.buttons[buttonName];
 
                 if (isObject) {
-                    button = this.#buttons[buttonName];
+                    button = fg.buttons[buttonName];
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                     button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
                     button.angle = Math.atan2(button.y, button.x);
                 } else {
                     const value = gamepad.axes[mappingButton];
-                    button = this.#buttons[buttonName]
+                    button = fg.buttons[buttonName]
                     button.value = value;
                     // TODO: set flag in button for zero
                     // meaning initialize this this.#buttons[buttonName] with {} on init
@@ -160,14 +149,10 @@ export class Gamepad extends EventTarget {
 
                 }
                 button.dispatchEventIfPushed();
-
             }
-
-            fg.buttons = this.#buttons;
         }
 
         f(this.#formattedGamepads)
-
     }
 
     #vibrate(duration, intensity, gamepad) {
@@ -185,5 +170,4 @@ export class Gamepad extends EventTarget {
             gamepad.vibrates = false
         });
     }
-
 }
