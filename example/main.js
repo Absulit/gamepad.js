@@ -28,6 +28,7 @@ export const xboxMappingFirefox = {
         LJX: { x: 0, y: 1 },
         RJX: { x: 2, y: 3 },
         LT: 4,
+        RT: 5,
     }
 };
 

@@ -142,11 +142,15 @@ export class Gamepad extends EventTarget {
                 } else {
                     const value = gamepad.axes[mappingButton];
                     button = fg.buttons[buttonName]
+                    button.lastValue = button.value;
                     button.value = value;
-                    // TODO: set flag in button for zero
-                    // meaning initialize this this.#buttons[buttonName] with {} on init
-                    button.touched = -.9 < value;
 
+
+                    button.touched = -.9 < value;
+                    // to solve a bug if the value starts in zero
+                    if(button.lastValue == button.value && button.value == 0){
+                       button.touched = false;
+                    }
                 }
                 button.dispatchEventIfPushed();
             }
