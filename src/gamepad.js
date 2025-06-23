@@ -111,9 +111,9 @@ export class Gamepad extends EventTarget {
         const gamepads = this.#getGamepads();
         for (let key in this.#formattedGamepads) {
             const fg = this.#formattedGamepads[key];
-            const gamepad = gamepads[fg.index];
+            const gamepad = gamepads[fg?.index];
 
-            const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+            const mapping = this.#gamepadInfo[gamepad?.id]?.mapping;
 
             if (!mapping) {
                 return
