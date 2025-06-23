@@ -1,4 +1,4 @@
-import { Gamepad } from "../src/gamepad3.js";
+import { Button, Gamepad } from "../src/gamepad3.js";
 import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
 export const xboxMappingFirefox = {
@@ -55,30 +55,32 @@ const g = new Gamepad(gamepadInfo)
 const output = document.getElementById('output');
 console.log(output);
 
-// let count = 0;
 g.addEventListener(Gamepad.CONNECTED, e => {
     console.log('---- Gamepad.CONNECTED', e);
 
-    // e.target // the one connected
-    // e.target.id // uuid
-    // e.target.name = 'control' + count++
+    const control0 = e.detail
+    console.log(control0.buttons)
 
-    // const control0 = e.detail
-    // console.log(control0.buttons)
+    control0.buttons.A.addEventListener(Button.PUSHED, e => {
+        console.log('A - PUSHED');
+    })
+    control0.buttons.A.addEventListener(Button.RELEASED, e => {
+        console.log('A - RELEASED');
+    })
 
-    // control0.buttons.A.addEventListener(Gamepad.PRESSED, e => {
-    //     console.log('A - PRESSED');
-    // })
+    control0.buttons.RJX.addEventListener(Button.PUSHED, e => {
+        console.log('RJX - PUSHED');
+    })
 
-
+    control0.buttons.RJX.addEventListener(Button.RELEASED, e => {
+        console.log('RJX - RELEASED');
+    })
 })
 
 g.addEventListener(Gamepad.DISCONNECTED, e => {
     console.log('---- Gamepad.DISCONNECTED');
     e.target // the one disconnected
 })
-
-
 
 function update() {
     requestAnimationFrame(update);
@@ -95,7 +97,6 @@ function update() {
 
             if (A.touched) {
                 output.innerText += 'A PRESSED\n'
-
             }
 
             if (B.touched) {

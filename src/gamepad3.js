@@ -13,9 +13,43 @@
 /**
  * Gamepad
  */
+
+export class Button extends EventTarget {
+    static PUSHED = 'PUSHED';
+    static RELEASED = 'RELEASED';
+    #pushed = false
+    #released = true
+
+    constructor() {
+        super()
+    }
+
+    /**
+     *
+     * @param {Object} v
+     */
+    setProperties(v) {
+        for (let p in v) {
+            this[p] = v[p]
+        }
+    }
+
+    dispatchEventIfPushed() {
+        if (this.touched && !this.#pushed) {
+            this.dispatchEvent(new Event(Button.PUSHED));
+            this.#pushed = true;
+            this.#released = false;
+        }
+        if (!this.touched && !this.#released) {
+            this.dispatchEvent(new Event(Button.RELEASED));
+            this.#pushed = false;
+            this.#released = true;
+        }
+    }
+}
+
 export class Gamepad extends EventTarget {
     static instance;
-    static PRESSED = 'PRESSED';
     static CONNECTED = 'CONNECTED';
     static DISCONNECTED = 'DISCONNECTED';
     #gamepadInfo = null;
@@ -51,9 +85,12 @@ export class Gamepad extends EventTarget {
 
         const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
         for (let buttonName in mapping.buttons) {
+            this.#buttons[buttonName] = new Button();
         }
         for (let buttonName in mapping.axes) {
+            this.#buttons[buttonName] = new Button();
         }
+        fg.buttons = this.#buttons;
 
         this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, {
             detail: fg
@@ -68,10 +105,6 @@ export class Gamepad extends EventTarget {
 
     #getGamepads() {
         return navigator.getGamepads();
-    }
-
-    #findGamepad(id, gamepads) {
-        return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
     }
 
     #isObject = v => {
@@ -97,14 +130,12 @@ export class Gamepad extends EventTarget {
             fg.pose = gamepad.pose;
 
             for (let buttonName in mapping.buttons) {
-                const button = this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+                const gamepadButton = gamepad.buttons[mapping.buttons[buttonName]];
+                const button = this.#buttons[buttonName];
+                button.setProperties(gamepadButton)
 
-                // if (button.touched && !button.pressed) {
-                //     button.dispatchEvent(Gamepad.PRESSED)
-                //     button._pressed = true;
-                // } else {
-                //     button._pressed = false;
-                // }
+                // console.log(gamepadButton.pushed);
+                button.dispatchEventIfPushed();
             }
 
             for (let buttonName in mapping.axes) {
@@ -115,23 +146,20 @@ export class Gamepad extends EventTarget {
                 // console.log(button, buttonName, isObject, mappingButton, mapping.axes);
 
                 if (isObject) {
-                    button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+                    button = this.#buttons[buttonName];
+                    button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                     button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
                     button.angle = Math.atan2(button.y, button.x);
                 } else {
                     const value = gamepad.axes[mappingButton];
-                    button = this.#buttons[buttonName] = { value }
+                    button = this.#buttons[buttonName]
+                    button.value = value;
                     // TODO: set flag in button for zero
                     // meaning initialize this this.#buttons[buttonName] with {} on init
                     button.touched = -.9 < value;
 
-                    // if (button.touched && !button.pressed) {
-                    //     button.dispatchEvent(Gamepad.PRESSED)
-                    //     button._pressed = true;
-                    // } else {
-                    //     button._pressed = false;
-                    // }
                 }
+                button.dispatchEventIfPushed();
 
             }
 
