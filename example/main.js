@@ -1,11 +1,42 @@
-import { Gamepad } from "../src/gamepad.js";
+import { Button, Gamepad } from "../src/gamepad.js";
 import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
+export const xboxMappingFirefox = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 3,
+        Y: 2,
 
+        LB: 4,
+        RB: 5,
+        // LT: 6,
+        // RT: 7,
+
+        VIEW: 8,
+        MENU: 9,
+
+        LJB: 10,
+        RJB: 11,
+
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 },
+        LT: 4,
+    }
+};
 
 const gamepadInfo = {
-    '045e': {
+    'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping
+    },
+    '045e-02dd-Microsoft X-Box One pad (Firmware 2015)': {
+        mapping: xboxMappingFirefox
     },
     right: {
         mapping: rightMapping
@@ -18,103 +49,137 @@ const gamepadInfo = {
     }
 };
 
-const gamepad = new Gamepad(gamepadInfo)
+const g = new Gamepad(gamepadInfo)
+
 const output = document.getElementById('output');
 console.log(output);
 
+g.addEventListener(Gamepad.CONNECTED, e => {
+    console.log('---- Gamepad.CONNECTED', e);
+
+    const control0 = e.detail
+    console.log(control0.buttons)
+    const { A, RJX } = control0.buttons;
+
+    A.addEventListener(Button.PUSHED, e => {
+        console.log('A - PUSHED');
+    })
+
+    A.addEventListener(Button.RELEASED, e => {
+        console.log('A - RELEASED');
+    })
+
+    RJX.addEventListener(Button.PUSHED, e => {
+        console.log('RJX - PUSHED');
+    })
+
+    RJX.addEventListener(Button.RELEASED, e => {
+        console.log('RJX - RELEASED');
+    })
+})
+
+g.addEventListener(Gamepad.DISCONNECTED, e => {
+    console.log('---- Gamepad.DISCONNECTED');
+    e.target // the one disconnected
+})
 
 function update() {
     requestAnimationFrame(update);
 
     output.innerText = '';
-    gamepad.update(gamepads => {
-        const { left, right, '045e': xbox, remote } = gamepads;
+    g.update(gamepads => {
+        const { control0 } = gamepads;
 
-        if (xbox) {
-            const { buttons } = xbox;
+        if (control0) {
+            const { buttons } = control0;
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
 
-            if (A.pressed) {
-                console.log('A');
-
+            if (A.touched) {
                 output.innerText += 'A PRESSED\n'
             }
 
-            if (B.pressed) {
+            if (B.touched) {
                 output.innerText += 'B PRESSED\n'
             }
 
-            if (A.pressed && B.pressed) {
-                xbox.vibrate(100)
+            if (A.touched && B.touched) {
+                control0.vibrate(100)
             }
 
-            if (Y.pressed) {
+            if (Y.touched) {
                 output.innerText += `Y PRESSED ${Y.id}\n`
             }
 
-            if (X.pressed) {
+            if (X.touched) {
                 output.innerText += `X PRESSED ${X.id}\n`
             }
 
-            if (LB.pressed) {
+            if (LB.touched) {
                 output.innerText += 'LB PRESSED\n'
             }
-            if (RB.pressed) {
+            if (RB.touched) {
                 output.innerText += 'RB PRESSED\n'
             }
-            if (LT.pressed) {
+
+            if (LT.touched) {
                 output.innerText += 'LT PRESSED\n'
-                xbox.vibrate(100, LT.value)
+                control0.vibrate(100, LT.value)
             }
-            if (RT.pressed) {
+            if (RT.touched) {
                 output.innerText += 'RT PRESSED\n'
-                xbox.vibrate(100, RT.value)
+                control0.vibrate(100, RT.value)
             }
-            if (VIEW.pressed) {
+
+            if (VIEW.touched) {
                 output.innerText += 'VIEW PRESSED\n'
             }
-            if (MENU.pressed) {
+            if (MENU.touched) {
                 output.innerText += 'MENU PRESSED\n'
             }
             // LJB, RJB, UP, DOWN, LEFT, RIGHT
-            if (LJB.pressed) {
+            if (LJB.touched) {
                 output.innerText += 'LJB PRESSED\n'
             }
 
-            if (RJB.pressed) {
+            if (RJB.touched) {
                 output.innerText += 'RJB PRESSED\n'
             }
 
-            if (UP.pressed) {
+            if (UP.touched) {
                 output.innerText += 'UP PRESSED\n'
             }
 
-            if (DOWN.pressed) {
+            if (DOWN.touched) {
                 output.innerText += 'DOWN PRESSED\n'
             }
 
-            if (LEFT.pressed) {
+            if (LEFT.touched) {
                 output.innerText += 'LEFT PRESSED\n'
             }
 
-            if (RIGHT.pressed) {
+            if (RIGHT.touched) {
                 output.innerText += 'RIGHT PRESSED\n'
             }
 
             // const {LJX, RJX} = axes;
-            if (LJX.pressed) {
+
+            if (LJX.touched) {
+                console.log(LJX);
                 output.innerText += 'LJX PRESSED\n'
             }
-            if (RJX.pressed) {
+            if (RJX.touched) {
+                console.log(RJX);
                 output.innerText += 'RJX PRESSED\n'
             }
-
-
-
         }
 
-    });
+
+    })
+
+
+
 }
-update();
+
+update()

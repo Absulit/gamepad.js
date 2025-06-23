@@ -11,15 +11,52 @@
  */
 
 /**
+ * Button
+ */
+
+export class Button extends EventTarget {
+    static PUSHED = 'PUSHED';
+    static RELEASED = 'RELEASED';
+    #pushed = false
+    #released = true
+
+    constructor() {
+        super()
+    }
+
+    /**
+     * To copy properties from the Gamepad API button
+     * @param {Object} v
+     */
+    setProperties(v) {
+        for (let p in v) {
+            this[p] = v[p]
+        }
+    }
+
+    dispatchEventIfPushed() {
+        if (this.touched && !this.#pushed) {
+            this.dispatchEvent(new Event(Button.PUSHED));
+            this.#pushed = true;
+            this.#released = false;
+        }
+        if (!this.touched && !this.#released) {
+            this.dispatchEvent(new Event(Button.RELEASED));
+            this.#pushed = false;
+            this.#released = true;
+        }
+    }
+}
+/**
  * Gamepad
  */
+
 export class Gamepad extends EventTarget {
     static instance;
-    static PRESSED = 'PRESSED';
-    #connected = false;
+    static CONNECTED = 'CONNECTED';
+    static DISCONNECTED = 'DISCONNECTED';
     #gamepadInfo = null;
     #formattedGamepads = {};
-    #buttons = {};
     constructor(gamepadInfo) {
         super();
         if (Gamepad.instance) {
@@ -34,76 +71,88 @@ export class Gamepad extends EventTarget {
         window.addEventListener('gamepaddisconnected', this.#onGamepadDisconnected);
     }
 
-    #init() {
-        const gamepads = this.#getGamepads();
-        for (let gamepadId in this.#gamepadInfo) {
-            const gamepad = this.#findGamepad(gamepadId, gamepads)
+    #onGamepadConnected = e => {
+        const { gamepad } = e;
+        const { index, id } = gamepad;
+        console.log('---- #onGamepadConnected', index, id);
+        console.log('---- #onGamepadConnected', gamepad);
+        const fg = this.#formattedGamepads[`control${index}`] = { index, buttons: {} };
 
-            if (!gamepad) {
-                continue;
-            }
+        fg.haptics = gamepad.hapticActuators;
+        fg.vibrationActuator = gamepad.vibrationActuator;
+        fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
 
-            this.#formattedGamepads[gamepadId] = {}
-            const formattedGamepad = this.#formattedGamepads[gamepadId];
-            formattedGamepad.haptics = gamepad.hapticActuators;
-            formattedGamepad.vibrationActuator = gamepad.vibrationActuator;
-            formattedGamepad.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
+        const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+        for (let buttonName in mapping.buttons) {
+            fg.buttons[buttonName] = new Button();
         }
+        for (let buttonName in mapping.axes) {
+            fg.buttons[buttonName] = new Button();
+        }
+
+        this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, { detail: fg }));
+    }
+
+    #onGamepadDisconnected = e => {
+        console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
+        this.#formattedGamepads[`control${e.gamepad.index}`] = null;
+        this.dispatchEvent(new Event(Gamepad.DISCONNECTED));
     }
 
     #getGamepads() {
         return navigator.getGamepads();
     }
 
-    #onGamepadConnected = e => {
-        console.log('---- #onGamepadConnected', e.gamepad.index, e.gamepad.id);
-        this.#connected = true;
-        this.#init();
-    }
-
-    #onGamepadDisconnected = e => {
-        console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
-        this.#connected = false;
-    }
-
-    #findGamepad(id, gamepads) {
-        return gamepads.find(gp => gp?.id.toLowerCase().indexOf(id) !== -1)
+    #isObject = v => {
+        return typeof v === 'object' && v !== null;
     }
 
     update = f => {
-        // if (!this.#connected) {
-        //     return;
-        // }
-
         const gamepads = this.#getGamepads();
-        for (let gamepadId in this.#gamepadInfo) {
-            const gamepad = this.#findGamepad(gamepadId, gamepads);
+        for (let key in this.#formattedGamepads) {
+            const fg = this.#formattedGamepads[key];
+            const gamepad = gamepads[fg.index];
 
-            if (!gamepad) {
-                continue;
+            const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+
+            if (!mapping) {
+                return
             }
-            const { mapping } = this.#gamepadInfo[gamepadId];
 
-            const formattedGamepad = this.#formattedGamepads[gamepadId]
-            formattedGamepad.pose = gamepad.pose;
-
+            fg.pose = gamepad.pose;
 
             for (let buttonName in mapping.buttons) {
-                this.#buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
+                const gamepadButton = gamepad.buttons[mapping.buttons[buttonName]];
+                const button = fg.buttons[buttonName];
+                button.setProperties(gamepadButton)
+                button.dispatchEventIfPushed();
             }
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
-                const button = this.#buttons[buttonName] = { x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] };
+                const isObject = this.#isObject(mappingButton);
 
-                button.pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                button.angle = Math.atan2(button.y, button.x);
+                let button = fg.buttons[buttonName];
+
+                if (isObject) {
+                    button = fg.buttons[buttonName];
+                    button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
+                    button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                    button.angle = Math.atan2(button.y, button.x);
+                } else {
+                    const value = gamepad.axes[mappingButton];
+                    button = fg.buttons[buttonName]
+                    button.value = value;
+                    // TODO: set flag in button for zero
+                    // meaning initialize this this.#buttons[buttonName] with {} on init
+                    button.touched = -.9 < value;
+
+                }
+                button.dispatchEventIfPushed();
             }
-
-            formattedGamepad.buttons = this.#buttons;
-
-            f(this.#formattedGamepads)
         }
+
+        f(this.#formattedGamepads)
     }
 
     #vibrate(duration, intensity, gamepad) {
@@ -112,7 +161,7 @@ export class Gamepad extends EventTarget {
         }
         intensity ||= 1;
         gamepad.vibrates = true
-        gamepad.vibrationActuator.playEffect('dual-rumble', {
+        gamepad.vibrationActuator?.playEffect('dual-rumble', {
             startDelay: 0,
             duration: duration,
             weakMagnitude: .1,
@@ -122,5 +171,3 @@ export class Gamepad extends EventTarget {
         });
     }
 }
-
-
