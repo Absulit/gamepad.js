@@ -47,6 +47,57 @@ export class Button extends EventTarget {
         }
     }
 }
+
+export class Control extends EventTarget {
+    #gamepad = null;
+    #index = null;
+    #buttons = {}
+    constructor(gamepad, index) {
+        super()
+        this.#gamepad = gamepad;
+        this.#index = index;
+    }
+
+    // get gamepad(){
+    //     return this.#gamepad;
+    // }
+
+    /**
+     * @param {Object} v
+     */
+    set gamepad(v) {
+        this.#gamepad = v;
+    }
+
+    get index() {
+        return this.#index
+    }
+
+    get buttons() {
+        return this.#buttons;
+    }
+
+    set buttons(v) {
+        this.#buttons = v;
+    }
+
+    vibrate(duration, intensity) {
+        if (this.#gamepad.vibrates) {
+            return
+        }
+        intensity ||= 1;
+        this.#gamepad.vibrates = true
+        this.#gamepad.vibrationActuator?.playEffect('dual-rumble', {
+            startDelay: 0,
+            duration: duration,
+            weakMagnitude: .1,
+            strongMagnitude: intensity,
+        }).then(() => {
+            this.#gamepad.vibrates = false
+        });
+    }
+}
+
 /**
  * Gamepad
  */
@@ -75,12 +126,14 @@ export class Gamepad extends EventTarget {
         const { gamepad } = e;
         const { index, id } = gamepad;
         console.log('---- #onGamepadConnected', index, id);
-        console.log('---- #onGamepadConnected', gamepad);
-        const fg = this.#formattedGamepads[`control${index}`] = { index, buttons: {} };
+        console.log('---- #onGamepadConnected', gamepad.constructor.name);
+        const fg = this.#formattedGamepads[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
-        fg.haptics = gamepad.hapticActuators;
-        fg.vibrationActuator = gamepad.vibrationActuator;
-        fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
+        // fg.haptics = gamepad.hapticActuators;
+        // fg.vibrationActuator = gamepad.vibrationActuator;
+        // console.log(gamepad.vibrationActuator);
+
+        // fg.vibrate = (d, v) => this.#vibrate(d, v, gamepad);
 
         const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
         for (let buttonName in mapping.buttons) {
@@ -148,8 +201,8 @@ export class Gamepad extends EventTarget {
 
                     button.touched = -.9 < value;
                     // to solve a bug if the value starts in zero
-                    if(button.lastValue == button.value && button.value == 0){
-                       button.touched = false;
+                    if (button.lastValue == button.value && button.value == 0) {
+                        button.touched = false;
                     }
                 }
                 button.dispatchEventIfPushed();
@@ -159,19 +212,19 @@ export class Gamepad extends EventTarget {
         f(this.#formattedGamepads)
     }
 
-    #vibrate(duration, intensity, gamepad) {
-        if (gamepad.vibrates) {
-            return
-        }
-        intensity ||= 1;
-        gamepad.vibrates = true
-        gamepad.vibrationActuator?.playEffect('dual-rumble', {
-            startDelay: 0,
-            duration: duration,
-            weakMagnitude: .1,
-            strongMagnitude: intensity,
-        }).then(() => {
-            gamepad.vibrates = false
-        });
-    }
+    // #vibrate(duration, intensity, gamepad) {
+    //     if (gamepad.vibrates) {
+    //         return
+    //     }
+    //     intensity ||= 1;
+    //     gamepad.vibrates = true
+    //     gamepad.vibrationActuator?.playEffect('dual-rumble', {
+    //         startDelay: 0,
+    //         duration: duration,
+    //         weakMagnitude: .1,
+    //         strongMagnitude: intensity,
+    //     }).then(() => {
+    //         gamepad.vibrates = false
+    //     });
+    // }
 }
