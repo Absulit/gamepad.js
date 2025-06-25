@@ -41,12 +41,21 @@ export class Button extends EventTarget {
             this.dispatchEvent(new Event(Button.PUSHED));
             this.#pushed = true;
             this.#released = false;
+
         }
         if (!this.touched && !this.#released) {
             this.dispatchEvent(new Event(Button.RELEASED));
             this.#pushed = false;
             this.#released = true;
         }
+    }
+
+    onPushed(f) {
+        this.addEventListener(Button.PUSHED, f);
+    }
+
+    onReleased(f) {
+        this.addEventListener(Button.RELEASED, f);
     }
 }
 
@@ -108,10 +117,10 @@ export class GamepadJS extends EventTarget {
     #mapping = null;
     constructor(gamepadInfo) {
         super();
-        if (Gamepad.instance) {
-            return Gamepad.instance;
+        if (GamepadJS.instance) {
+            return GamepadJS.instance;
         }
-        Gamepad.instance = this;
+        GamepadJS.instance = this;
         this.#gamepadInfo = gamepadInfo;
 
         //https://twitter.com/Tojiro/status/807758580791197696
@@ -139,13 +148,13 @@ export class GamepadJS extends EventTarget {
             control.buttons[buttonName] = new Button();
         }
 
-        this.dispatchEvent(new CustomEvent(Gamepad.CONNECTED, { detail: control }));
+        this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
     #onGamepadDisconnected = e => {
         console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
         this.#controls[`control${e.gamepad.index}`] = null;
-        this.dispatchEvent(new Event(Gamepad.DISCONNECTED));
+        this.dispatchEvent(new Event(GamepadJS.DISCONNECTED));
     }
 
     #getGamepads() {

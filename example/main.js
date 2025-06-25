@@ -61,6 +61,7 @@ g.addEventListener(GamepadJS.CONNECTED, e => {
     const control0 = e.detail
     console.log(control0.buttons)
     const { A, RJX } = control0.buttons;
+    console.log(A);
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
