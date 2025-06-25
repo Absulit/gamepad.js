@@ -21,9 +21,11 @@ export class Button extends EventTarget {
     static RELEASED = 'RELEASED';
     #pushed = false
     #released = true
+    #name = null;
 
-    constructor() {
+    constructor(name) {
         super()
+        this.#name = name;
     }
 
     /**
@@ -50,10 +52,20 @@ export class Button extends EventTarget {
         }
     }
 
+    /**
+     * Syntactic sugar for
+     * `addEventListener(Button.PUSHED, f)`
+     * @param {Function} f callback
+     */
     onPushed(f) {
         this.addEventListener(Button.PUSHED, f);
     }
 
+    /**
+     * Syntactic sugar for
+     * `addEventListener(Button.RELEASED, f)`
+     * @param {Function} f callback
+     */
     onReleased(f) {
         this.addEventListener(Button.RELEASED, f);
     }
@@ -65,6 +77,7 @@ export class Button extends EventTarget {
 export class Control extends EventTarget {
     #gamepad = null;
     #index = null;
+    /** @type {Object.<string, Button>} */
     #buttons = {}
     constructor(gamepad, index) {
         super()
@@ -113,6 +126,7 @@ export class GamepadJS extends EventTarget {
     static CONNECTED = 'CONNECTED';
     static DISCONNECTED = 'DISCONNECTED';
     #gamepadInfo = null;
+    /** @type {Object.<string, Control>} */
     #controls = {};
     #mapping = null;
     constructor(gamepadInfo) {
@@ -142,10 +156,10 @@ export class GamepadJS extends EventTarget {
         }
 
         for (let buttonName in this.#mapping.buttons) {
-            control.buttons[buttonName] = new Button();
+            control.buttons[buttonName] = new Button(buttonName);
         }
         for (let buttonName in this.#mapping.axes) {
-            control.buttons[buttonName] = new Button();
+            control.buttons[buttonName] = new Button(buttonName);
         }
 
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));

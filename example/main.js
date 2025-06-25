@@ -67,6 +67,10 @@ g.addEventListener(GamepadJS.CONNECTED, e => {
         console.log('A - PUSHED');
     })
 
+    A.onPushed(e => {
+        console.log('A - PUSHED 2', e);
+    })
+
     A.addEventListener(Button.RELEASED, e => {
         console.log('A - RELEASED');
     })
