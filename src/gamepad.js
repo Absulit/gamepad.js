@@ -100,6 +100,11 @@ export class Control extends EventTarget {
         return this.#buttons;
     }
 
+    /**
+     * Vibrates the controller
+     * @param {Number} duration
+     * @param {Number} intensity
+     */
     vibrate(duration, intensity) {
         if (this.#gamepad.vibrates) {
             return
@@ -125,10 +130,16 @@ export class GamepadJS extends EventTarget {
     static instance;
     static CONNECTED = 'CONNECTED';
     static DISCONNECTED = 'DISCONNECTED';
+    /** @type {Object.<string, Object>} */
     #gamepadInfo = null;
     /** @type {Object.<string, Control>} */
     #controls = {};
     #mapping = null;
+    /**
+     *
+     * @param {Object.<string, Object>|null} gamepadInfo
+     * @returns GamepadJS instance
+     */
     constructor(gamepadInfo) {
         super();
         if (GamepadJS.instance) {
@@ -179,12 +190,15 @@ export class GamepadJS extends EventTarget {
         return typeof v === 'object' && v !== null;
     }
 
+    /**
+     * To be called in the `requestAnimationFrame`
+     * @param {(gamepads: Object.<string, Control>)} f callback
+     */
     update = f => {
         const gamepads = this.#getGamepads();
         for (let key in this.#controls) {
             const control = this.#controls[key];
             const gamepad = gamepads[control?.index];
-
             const mapping = this.#mapping;
 
             if (!mapping) {
@@ -216,8 +230,6 @@ export class GamepadJS extends EventTarget {
                     button = control.buttons[buttonName]
                     button.lastValue = button.value;
                     button.value = value;
-
-
                     button.touched = -.9 < value;
                     // to solve a bug if the value starts in zero
                     if (button.lastValue == button.value && button.value == 0) {
@@ -228,6 +240,6 @@ export class GamepadJS extends EventTarget {
             }
         }
 
-        f(this.#controls)
+        f(this.#controls);
     }
 }

@@ -1,4 +1,4 @@
-import { Button, GamepadJS } from "../src/gamepad.js";
+import { Button, Control, GamepadJS } from "../src/gamepad.js";
 import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
 const xboxMappingFirefox = {
@@ -58,6 +58,7 @@ console.log(output);
 g.addEventListener(GamepadJS.CONNECTED, e => {
     console.log('---- Gamepad.CONNECTED', e);
 
+    /** @type {Control} */
     const control0 = e.detail
     console.log(control0.buttons)
     const { A, RJX } = control0.buttons;
@@ -93,8 +94,8 @@ function update() {
     requestAnimationFrame(update);
 
     output.innerText = '';
-    g.update(gamepads => {
-        const { control0 } = gamepads;
+    g.update(controls => {
+        const { control0 } = controls;
 
         if (control0) {
             const { buttons } = control0;
