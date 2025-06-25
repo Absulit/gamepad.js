@@ -1,7 +1,7 @@
-import { Button, Gamepad } from "../src/gamepad.js";
+import { Button, GamepadJS } from "../src/gamepad.js";
 import { xboxMapping, rightMapping, leftMapping, remoteMapping } from "../src/gamepadMapping.js";
 
-export const xboxMappingFirefox = {
+const xboxMappingFirefox = {
     buttons: {
         A: 0,
         B: 1,
@@ -50,12 +50,12 @@ const gamepadInfo = {
     }
 };
 
-const g = new Gamepad(gamepadInfo)
+const g = new GamepadJS(gamepadInfo)
 
 const output = document.getElementById('output');
 console.log(output);
 
-g.addEventListener(Gamepad.CONNECTED, e => {
+g.addEventListener(GamepadJS.CONNECTED, e => {
     console.log('---- Gamepad.CONNECTED', e);
 
     const control0 = e.detail
@@ -79,7 +79,7 @@ g.addEventListener(Gamepad.CONNECTED, e => {
     })
 })
 
-g.addEventListener(Gamepad.DISCONNECTED, e => {
+g.addEventListener(GamepadJS.DISCONNECTED, e => {
     console.log('---- Gamepad.DISCONNECTED');
     e.target // the one disconnected
 })
@@ -175,12 +175,7 @@ function update() {
                 output.innerText += 'RJX PRESSED\n'
             }
         }
-
-
     })
-
-
-
 }
 
 update()

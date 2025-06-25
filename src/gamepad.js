@@ -10,6 +10,8 @@
  * chrome://flags
  */
 
+import { xboxMapping } from './gamepadMapping.js';
+
 /**
  * Button
  */
@@ -97,12 +99,13 @@ export class Control extends EventTarget {
  * Gamepad
  */
 
-export class Gamepad extends EventTarget {
+export class GamepadJS extends EventTarget {
     static instance;
     static CONNECTED = 'CONNECTED';
     static DISCONNECTED = 'DISCONNECTED';
     #gamepadInfo = null;
     #controls = {};
+    #mapping = null;
     constructor(gamepadInfo) {
         super();
         if (Gamepad.instance) {
@@ -124,11 +127,11 @@ export class Gamepad extends EventTarget {
         console.log('---- #onGamepadConnected', gamepad.constructor.name);
         const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
-        const mapping = this.#gamepadInfo[gamepad.id]?.mapping;
-        for (let buttonName in mapping.buttons) {
+        const {buttons, axes} = this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+        for (let buttonName in buttons) {
             control.buttons[buttonName] = new Button();
         }
-        for (let buttonName in mapping.axes) {
+        for (let buttonName in axes) {
             control.buttons[buttonName] = new Button();
         }
 
@@ -155,7 +158,7 @@ export class Gamepad extends EventTarget {
             const control = this.#controls[key];
             const gamepad = gamepads[control?.index];
 
-            const mapping = this.#gamepadInfo[gamepad?.id]?.mapping;
+            const mapping = this.#mapping;
 
             if (!mapping) {
                 return
