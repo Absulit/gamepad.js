@@ -127,11 +127,15 @@ export class GamepadJS extends EventTarget {
         console.log('---- #onGamepadConnected', gamepad.constructor.name);
         const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
-        const {buttons, axes} = this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
-        for (let buttonName in buttons) {
+        this.#mapping = xboxMapping;
+        if (this.#gamepadInfo) {
+            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+        }
+
+        for (let buttonName in this.#mapping.buttons) {
             control.buttons[buttonName] = new Button();
         }
-        for (let buttonName in axes) {
+        for (let buttonName in this.#mapping.axes) {
             control.buttons[buttonName] = new Button();
         }
 
