@@ -68,6 +68,37 @@ export const xboxMapping = {
     }
 };
 
+export const xboxMappingFirefox = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 3,
+        Y: 2,
+
+        LB: 4,
+        RB: 5,
+        // LT: 6,
+        // RT: 7,
+
+        VIEW: 8,
+        MENU: 9,
+
+        LJB: 10,
+        RJB: 11,
+
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 },
+        LT: 4,
+        RT: 5,
+    }
+};
+
 export const remoteMapping = {
     buttons: {
         SELECT: 0,
@@ -93,8 +124,11 @@ export const remoteMapping = {
 */
 
 export const gamepadInfo = {
-    xbox: {
+    'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping
+    },
+    '045e-02dd-Microsoft X-Box One pad (Firmware 2015)': {
+        mapping: xboxMappingFirefox
     },
     right: {
         mapping: rightMapping
