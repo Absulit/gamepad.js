@@ -7,102 +7,136 @@
 
 */
 
-    var rightMapping = {
-        buttons:{
-            RJB: 0,
-            INDEX: 1,
-            HAND: 2,
-            A: 3,
-            B: 4,
-            MENU: 5,
-        },
-        axes: {
-          LJX: {x: 0, y: 1},
-          RJX: {x: 2, y: 3}
-        }
+export const rightMapping = {
+    buttons: {
+        RJB: 0,
+        INDEX: 1,
+        HAND: 2,
+        A: 3,
+        B: 4,
+        MENU: 5,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 }
+    }
 
-    };
+};
 
-    var leftMapping = {
-        buttons:{
-            LJB: 0,
-            INDEX: 1,
-            HAND: 2,
-            X: 3,
-            Y: 4,
-            MENU: 5,
-        },
-        axes: {
-          LJX: {x: 0, y: 1},
-          RJX: {x: 2, y: 3}
-        }
+export const leftMapping = {
+    buttons: {
+        LJB: 0,
+        INDEX: 1,
+        HAND: 2,
+        X: 3,
+        Y: 4,
+        MENU: 5,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 }
+    }
 
-    };
+};
 
-    var xboxMapping = {
-        buttons:{
-            A: 0,
-            B: 1,
-            X: 2,
-            Y: 3,
+export const xboxMapping = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 2,
+        Y: 3,
 
-            LB: 4,
-            RB: 5,
-            LT: 6,
-            RT: 7,
+        LB: 4,
+        RB: 5,
+        LT: 6,
+        RT: 7,
 
-            VIEW: 8,
-            MENU: 9,
+        VIEW: 8,
+        MENU: 9,
 
-            LJB: 10,
-            RJB: 11,
+        LJB: 10,
+        RJB: 11,
 
-            UP: 12,
-            DOWN: 13,
-            LEFT: 14,
-            RIGHT: 15,
-        },
-        axes:{
-            LJX: {x: 0, y: 1},
-            RJX: {x: 2, y: 3}
-        }
-    };
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 }
+    }
+};
 
-    var remoteMapping = {
-        buttons:{
-            SELECT: 0,
-            BACK: 1,
+export const xboxMappingFirefox = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 3,
+        Y: 2,
 
-            UP: 2,
-            DOWN: 3,
-            LEFT: 4,
-            RIGHT: 5,
+        LB: 4,
+        RB: 5,
+        // LT: 6,
+        // RT: 7,
 
-        }
-    };
+        VIEW: 8,
+        MENU: 9,
 
-    /*
+        LJB: 10,
+        RJB: 11,
 
-        The key(s) in gamepadInfo is a string to select the gamepad based on the
-        string used as gamepad.id
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 },
+        LT: 4,
+        RT: 5,
+    }
+};
 
-        The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
-        but I retrieve it using only a key part of that string, which is 'xbox'.
-        Same goes for the other controllers: 'right', 'left' and 'remote'
+export const remoteMapping = {
+    buttons: {
+        SELECT: 0,
+        BACK: 1,
 
-    */
+        UP: 2,
+        DOWN: 3,
+        LEFT: 4,
+        RIGHT: 5,
 
-    var gamepadInfo = {
-        xbox:{
-            mapping: xboxMapping
-        },
-        right:{
-            mapping: rightMapping
-        },
-        left:{
-            mapping: leftMapping
-        },
-        remote:{
-            mapping: remoteMapping
-        }
-    };
+    }
+};
+
+/*
+
+    The key(s) in gamepadInfo is a string to select the gamepad based on the
+    string used as gamepad.id
+
+    The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
+    but I retrieve it using only a key part of that string, which is 'xbox'.
+    Same goes for the other controllers: 'right', 'left' and 'remote'
+
+*/
+
+export const gamepadInfo = {
+    'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
+        mapping: xboxMapping
+    },
+    '045e-02dd-Microsoft X-Box One pad (Firmware 2015)': {
+        mapping: xboxMappingFirefox
+    },
+    right: {
+        mapping: rightMapping
+    },
+    left: {
+        mapping: leftMapping
+    },
+    remote: {
+        mapping: remoteMapping
+    }
+};

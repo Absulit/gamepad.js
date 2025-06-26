@@ -10,129 +10,242 @@
  * chrome://flags
  */
 
-/*global THREE, TWEEN, ABSULIT, Stats, camera, scene, loader, console, window, document */
+import { xboxMapping } from './gamepadMapping.js';
 
-var ABSULIT = ABSULIT || {};
-ABSULIT.gamepad = ABSULIT.gamepad || (function () {
-    'use strict';
-    var object = {},
-        gamepad = null,
-        gamepads = {},
-        gamepadConnected = false;
+/**
+ * Button
+ */
 
-    var onGamepadPressedLocal,
-        onUpdateLocal,
-        gamepadInfoLocal,
-        buttons = {},
-        formattedGamepads = {};
+export class Button extends EventTarget {
+    static PUSHED = 'PUSHED';
+    static RELEASED = 'RELEASED';
+    #pushed = false
+    #released = true
+    #name = null;
 
+    constructor(name) {
+        super()
+        this.#name = name;
+    }
 
-    object.init = function (gamepadInfo /*gamepadIdList*/, onGamepadPressed, onUpdate) {
-        onGamepadPressedLocal = onGamepadPressed;
-        onUpdateLocal = onUpdate;
-        gamepadInfoLocal = gamepadInfo;
+    /**
+     * To copy properties from the Gamepad API button
+     * @param {Object} v
+     */
+    setProperties(v) {
+        for (let p in v) {
+            this[p] = v[p]
+        }
+    }
+
+    dispatchEventIfPushed() {
+        if (this.touched && !this.#pushed) {
+            this.dispatchEvent(new Event(Button.PUSHED));
+            this.#pushed = true;
+            this.#released = false;
+
+        }
+        if (!this.touched && !this.#released) {
+            this.dispatchEvent(new Event(Button.RELEASED));
+            this.#pushed = false;
+            this.#released = true;
+        }
+    }
+
+    /**
+     * Syntactic sugar for
+     * `addEventListener(Button.PUSHED, f)`
+     * @param {Function} f callback
+     */
+    onPushed(f) {
+        this.addEventListener(Button.PUSHED, f);
+    }
+
+    /**
+     * Syntactic sugar for
+     * `addEventListener(Button.RELEASED, f)`
+     * @param {Function} f callback
+     */
+    onReleased(f) {
+        this.addEventListener(Button.RELEASED, f);
+    }
+}
+
+/**
+ * Control
+ */
+export class Control extends EventTarget {
+    #gamepad = null;
+    #index = null;
+    /** @type {Object.<string, Button>} */
+    #buttons = {}
+    constructor(gamepad, index) {
+        super()
+        this.#gamepad = gamepad;
+        this.#index = index;
+    }
+
+    /**
+     * @param {Object} v
+     */
+    set gamepad(v) {
+        this.#gamepad = v;
+    }
+
+    get index() {
+        return this.#index
+    }
+
+    get buttons() {
+        return this.#buttons;
+    }
+
+    /**
+     * Vibrates the controller
+     * @param {Number} duration
+     * @param {Number} intensity
+     */
+    vibrate(duration, intensity) {
+        if (this.#gamepad.vibrates) {
+            return
+        }
+        intensity ||= 1;
+        this.#gamepad.vibrates = true
+        this.#gamepad.vibrationActuator?.playEffect('dual-rumble', {
+            startDelay: 0,
+            duration: duration,
+            weakMagnitude: .1,
+            strongMagnitude: intensity,
+        }).then(() => {
+            this.#gamepad.vibrates = false
+        });
+    }
+}
+
+/**
+ * Gamepad
+ */
+
+export class GamepadJS extends EventTarget {
+    static instance;
+    static CONNECTED = 'CONNECTED';
+    static DISCONNECTED = 'DISCONNECTED';
+    /** @type {Object.<string, Object>} */
+    #gamepadInfo = null;
+    /** @type {Object.<string, Control>} */
+    #controls = {};
+    #mapping = null;
+    /**
+     *
+     * @param {Object.<string, Object>|null} gamepadInfo
+     * @returns GamepadJS instance
+     */
+    constructor(gamepadInfo) {
+        super();
+        if (GamepadJS.instance) {
+            return GamepadJS.instance;
+        }
+        GamepadJS.instance = this;
+        this.#gamepadInfo = gamepadInfo;
 
         //https://twitter.com/Tojiro/status/807758580791197696
         //console.log(navigator.getVRDisplays() );
-
-        window.addEventListener("gamepadconnected", function(e) {
-            gamepads = getGamepads();
-            gamepad = getController(gamepads, 'xbox');
-            gamepadConnected = !!gamepad;
-        });
-
-        window.addEventListener("gamepaddisconnected", function(e) {
-          console.log("Gamepad disconnected from index %d: %s",
-            e.gamepad.index, e.gamepad.id);
-
-            gamepadConnected = false;
-        });
-
-        gamepads = getGamepads();
-        gamepad = getController(gamepads, 'xbox');
-        gamepadConnected = !!gamepad;
-        console.log("---- gamepadConnected: ", gamepadConnected);
-
-        window.addEventListener("gamepadconnected", function(e) { gamepadHandler(e, true); }, false);
-        window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(e, false); }, false);
-    };
-
-    /* -------------------- */
-
-    function gamepadHandler(event, connecting) {
-      var gamepad = event.gamepad;
-      // Note:
-      // gamepad === navigator.getGamepads()[gamepad.index]
-
-      if (connecting) {
-        gamepads[gamepad.index] = gamepad;
-      } else {
-        delete gamepads[gamepad.index];
-      }
+        window.addEventListener('gamepadconnected', this.#onGamepadConnected);
+        window.addEventListener('gamepaddisconnected', this.#onGamepadDisconnected);
     }
 
-    /* -------------------- */
+    #onGamepadConnected = e => {
+        const { gamepad } = e;
+        const { index, id } = gamepad;
+        console.log('---- #onGamepadConnected', index, id);
+        console.log('---- #onGamepadConnected', gamepad.constructor.name);
+        const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
-    function getGamepads(){
-        return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-    }
-
-    function getController(gamepads, id){
-        //console.log(gamepads);
-        var gp, gpindex;
-        for(gpindex in gamepads){
-            gp = gamepads[gpindex];
-            //console.log(gp);
-            //console.log('---- gp.id',gp.id);
-            if(gp !== null && (typeof gp == "object") && (gp.id.toLowerCase().indexOf(id) !== -1)){
-                break;
-            }
+        this.#mapping = xboxMapping;
+        if (this.#gamepadInfo) {
+            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
         }
-        return gp;
+
+        for (let buttonName in this.#mapping.buttons) {
+            control.buttons[buttonName] = new Button(buttonName);
+        }
+        for (let buttonName in this.#mapping.axes) {
+            control.buttons[buttonName] = new Button(buttonName);
+        }
+
+        this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
+    #onGamepadDisconnected = e => {
+        console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
+        this.#controls[`control${e.gamepad.index}`] = null;
+        this.dispatchEvent(new Event(GamepadJS.DISCONNECTED));
+    }
 
-    var gamepadId,
-        button;
-    object.update = function () {
-        //gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-        gamepads = getGamepads();
+    onConnected(f) {
+        this.addEventListener(GamepadJS.CONNECTED, f);
+    }
 
-        /* -------------------- */
-        for(gamepadId in gamepadInfoLocal){
-            buttons = {};
-            //gamepadId = gamepadIdListLocal[gamepadIdListIndex].gamepadId;
-            var mapping = gamepadInfoLocal[gamepadId].mapping;
-            gamepad = getController(gamepads, gamepadId);
-            if(gamepadConnected && gamepad.buttons){
+    onDisconnected(f) {
+        this.addEventListener(GamepadJS.DISCONNECTED, f);
+    }
 
-                formattedGamepads[gamepadId] = {};
-                formattedGamepads[gamepadId].pose = gamepad.pose;
+    #getGamepads() {
+        return navigator.getGamepads();
+    }
 
+    #isObject = v => typeof v === 'object' && v !== null;
 
-                for (var buttonName in mapping.buttons){
-                    buttons[buttonName] = gamepad.buttons[mapping.buttons[buttonName]];
-                }
-                for(var buttonName in mapping.axes){
-                    var mappingButton = mapping.axes[buttonName];
+    /**
+     * To be called in the `requestAnimationFrame`
+     * @param {(gamepads: Object.<string, Control>)} f callback
+     */
+    update = f => {
+        const gamepads = this.#getGamepads();
+        for (let key in this.#controls) {
+            const control = this.#controls[key];
+            const gamepad = gamepads[control?.index];
+            const mapping = this.#mapping;
 
-                    button = buttons[buttonName] = {x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y]};
-                    buttons[buttonName].pressed = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                    buttons[buttonName].angle = Math.atan2(button.y, button.x);
-                }
-
-                formattedGamepads[gamepadId].buttons = buttons;
-                formattedGamepads[gamepadId].haptics = gamepad.hapticActuators;
-
+            if (!mapping) {
+                return
             }
 
+            control.pose = gamepad.pose;
+
+            for (let buttonName in mapping.buttons) {
+                const gamepadButton = gamepad.buttons[mapping.buttons[buttonName]];
+                const button = control.buttons[buttonName];
+                button.setProperties(gamepadButton)
+                button.dispatchEventIfPushed();
+            }
+
+            for (let buttonName in mapping.axes) {
+                const mappingButton = mapping.axes[buttonName];
+                const isObject = this.#isObject(mappingButton);
+
+                let button = control.buttons[buttonName];
+
+                if (isObject) {
+                    button = control.buttons[buttonName];
+                    button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
+                    button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                    button.angle = Math.atan2(button.y, button.x);
+                } else {
+                    const value = gamepad.axes[mappingButton];
+                    button = control.buttons[buttonName]
+                    button.lastValue = button.value;
+                    button.value = value;
+                    button.touched = -.9 < value;
+                    // to solve a bug if the value starts in zero
+                    if (button.lastValue == button.value && button.value == 0) {
+                        button.touched = false;
+                    }
+                }
+                button.dispatchEventIfPushed();
+            }
         }
-        onGamepadPressedLocal(formattedGamepads);
 
-        /* -------------------- */
-        onUpdateLocal(formattedGamepads);
-    };
-
-    return object;
-
-})();
+        f(this.#controls);
+    }
+}
