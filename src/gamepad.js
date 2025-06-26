@@ -182,13 +182,19 @@ export class GamepadJS extends EventTarget {
         this.dispatchEvent(new Event(GamepadJS.DISCONNECTED));
     }
 
+    onConnected(f) {
+        this.addEventListener(GamepadJS.CONNECTED, f);
+    }
+
+    onDisconnected(f) {
+        this.addEventListener(GamepadJS.DISCONNECTED, f);
+    }
+
     #getGamepads() {
         return navigator.getGamepads();
     }
 
-    #isObject = v => {
-        return typeof v === 'object' && v !== null;
-    }
+    #isObject = v => typeof v === 'object' && v !== null;
 
     /**
      * To be called in the `requestAnimationFrame`

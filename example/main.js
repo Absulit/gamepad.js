@@ -8,7 +8,7 @@ const g = new GamepadJS(gamepadInfo)
 const output = document.getElementById('output');
 console.log(output);
 
-g.addEventListener(GamepadJS.CONNECTED, e => {
+g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
     /** @type {Control} */
@@ -38,7 +38,7 @@ g.addEventListener(GamepadJS.CONNECTED, e => {
     })
 })
 
-g.addEventListener(GamepadJS.DISCONNECTED, e => {
+g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
 })
 

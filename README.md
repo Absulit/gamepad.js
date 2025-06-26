@@ -9,7 +9,7 @@ Works with XBOX controllers. I have to test more devices. I will update here whe
 # Example:
 
 ```javascript
-// from example.main.js
+// from example/main.js
 
 import { Button, Control, GamepadJS } from '../src/gamepad.js';
 import { gamepadInfo } from '../src/gamepadMapping.js';
@@ -18,7 +18,7 @@ import { gamepadInfo } from '../src/gamepadMapping.js';
 const g = new GamepadJS(gamepadInfo)
 
 
-g.addEventListener(GamepadJS.CONNECTED, e => {
+g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
     /** @type {Control} */
@@ -40,7 +40,7 @@ g.addEventListener(GamepadJS.CONNECTED, e => {
     })
 })
 
-g.addEventListener(GamepadJS.DISCONNECTED, e => {
+g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
 })
 
