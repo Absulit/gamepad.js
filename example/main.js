@@ -1,6 +1,6 @@
 import { Button, Control, GamepadJS } from '../src/gamepad.js';
 import { gamepadInfo } from '../src/gamepadMapping.js';
-import { arrows } from './arrows.js';
+import { imgs } from './imgs.js';
 
 
 // minified
@@ -12,6 +12,14 @@ const g = new GamepadJS(gamepadInfo)
 
 const output = document.getElementById('output');
 const arrowsEl = document.getElementById('arrows');
+const b = document.getElementById('buttons');
+
+const buttonsEl = {
+    A: b.querySelector('#a'),
+    B: b.querySelector('#b'),
+    X: b.querySelector('#x'),
+    Y: b.querySelector('#y'),
+}
 
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
@@ -19,10 +27,11 @@ g.onConnected(e => {
     /** @type {Control} */
     const control0 = e.detail
     console.log(control0.buttons)
-    const { A, RJX } = control0.buttons;
+    const { A, B, X, Y, RJX } = control0.buttons;
+    const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
     console.log(A);
 
-    arrowsEl.src = arrows.NONE
+    arrowsEl.src = imgs.NONE
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
@@ -43,6 +52,33 @@ g.onConnected(e => {
     RJX.addEventListener(Button.RELEASED, e => {
         console.log('RJX - RELEASED');
     })
+
+    LEFT.onPushed(e => arrowsEl.src = imgs.LEFT);
+    RIGHT.onPushed(e => arrowsEl.src = imgs.RIGHT);
+    UP.onPushed(e => arrowsEl.src = imgs.UP);
+    DOWN.onPushed(e => arrowsEl.src = imgs.DOWN);
+
+    console.log(b, buttonsEl);
+
+
+    A.onPushed(e => buttonsEl.A.src = imgs.A.PRESSED);
+    B.onPushed(e => buttonsEl.B.src = imgs.B.PRESSED);
+    X.onPushed(e => buttonsEl.X.src = imgs.X.PRESSED);
+    Y.onPushed(e => buttonsEl.Y.src = imgs.Y.PRESSED);
+
+    A.onReleased(e => buttonsEl.A.src = imgs.A.RELEASED);
+    B.onReleased(e => buttonsEl.B.src = imgs.B.RELEASED);
+    X.onReleased(e => buttonsEl.X.src = imgs.X.RELEASED);
+    Y.onReleased(e => buttonsEl.Y.src = imgs.Y.RELEASED);
+
+    const onReleased = e => arrowsEl.src = imgs.NONE;
+
+    LEFT.onReleased(onReleased);
+    RIGHT.onReleased(onReleased);
+    UP.onReleased(onReleased);
+    DOWN.onReleased(onReleased);
+
+
 })
 
 g.onDisconnected(e => {
@@ -62,7 +98,7 @@ function update() {
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
 
-            arrowsEl.src = arrows.NONE;
+            // arrowsEl.src = imgs.NONE;
 
             if (A.touched) {
                 output.innerText += 'A PRESSED\n'
@@ -117,22 +153,18 @@ function update() {
 
             if (UP.touched) {
                 output.innerText += 'UP PRESSED\n'
-                arrowsEl.src = arrows.UP;
             }
 
             if (DOWN.touched) {
                 output.innerText += 'DOWN PRESSED\n'
-                arrowsEl.src = arrows.DOWN;
             }
 
             if (LEFT.touched) {
                 output.innerText += 'LEFT PRESSED\n'
-                arrowsEl.src = arrows.LEFT;
             }
 
             if (RIGHT.touched) {
                 output.innerText += 'RIGHT PRESSED\n'
-                arrowsEl.src = arrows.RIGHT;
             }
 
             // const {LJX, RJX} = axes;
