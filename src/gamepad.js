@@ -28,6 +28,10 @@ export class Button extends EventTarget {
         this.#name = name;
     }
 
+    get name() {
+        return this.#name;
+    }
+
     /**
      * To copy properties from the Gamepad API button
      * @param {Object} v

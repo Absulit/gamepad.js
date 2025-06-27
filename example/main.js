@@ -1,5 +1,6 @@
 import { Button, Control, GamepadJS } from '../src/gamepad.js';
 import { gamepadInfo } from '../src/gamepadMapping.js';
+import { arrows } from './arrows.js';
 
 
 // minified
@@ -10,7 +11,7 @@ import { gamepadInfo } from '../src/gamepadMapping.js';
 const g = new GamepadJS(gamepadInfo)
 
 const output = document.getElementById('output');
-console.log(output);
+const arrowsEl = document.getElementById('arrows');
 
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
@@ -20,6 +21,8 @@ g.onConnected(e => {
     console.log(control0.buttons)
     const { A, RJX } = control0.buttons;
     console.log(A);
+
+    arrowsEl.src = arrows.NONE
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
@@ -58,6 +61,8 @@ function update() {
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
+
+            arrowsEl.src = arrows.NONE;
 
             if (A.touched) {
                 output.innerText += 'A PRESSED\n'
@@ -112,18 +117,22 @@ function update() {
 
             if (UP.touched) {
                 output.innerText += 'UP PRESSED\n'
+                arrowsEl.src = arrows.UP;
             }
 
             if (DOWN.touched) {
                 output.innerText += 'DOWN PRESSED\n'
+                arrowsEl.src = arrows.DOWN;
             }
 
             if (LEFT.touched) {
                 output.innerText += 'LEFT PRESSED\n'
+                arrowsEl.src = arrows.LEFT;
             }
 
             if (RIGHT.touched) {
                 output.innerText += 'RIGHT PRESSED\n'
+                arrowsEl.src = arrows.RIGHT;
             }
 
             // const {LJX, RJX} = axes;
