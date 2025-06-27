@@ -2,6 +2,10 @@ import { Button, Control, GamepadJS } from '../src/gamepad.js';
 import { gamepadInfo } from '../src/gamepadMapping.js';
 
 
+// minified
+// import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+
+
 
 const g = new GamepadJS(gamepadInfo)
 

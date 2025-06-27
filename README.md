@@ -11,8 +11,7 @@ Works with XBOX controllers. I have to test more devices. I will update here whe
 ```javascript
 // from example/main.js
 
-import { Button, Control, GamepadJS } from '../src/gamepad.js';
-import { gamepadInfo } from '../src/gamepadMapping.js';
+import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
 // if no gamepadInfo is set it defaults to one of the controllers
 const g = new GamepadJS(gamepadInfo)
@@ -108,19 +107,11 @@ update()
 ```
 ## minification
 ```sh
+# install esbuild
 brew install esbuild
 ```
 
 ```sh
-esbuild src/gamepad.js --bundle --minify --keep-names --format=esm --target=es2020 --outfile=src/gamepad.min.js
-
-
-esbuild src/gamepad.js \
-  --minify-syntax \
-  --minify-whitespace \
-  --keep-names \
-  --format=esm \
-  --target=esnext \
-  --outfile=src/gamepad.min.js
-
+# run script to build min
+sh build.sh
 ```
