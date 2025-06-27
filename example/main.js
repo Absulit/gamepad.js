@@ -113,11 +113,11 @@ function update() {
             }
 
             if (Y.touched) {
-                output.innerText += `Y PRESSED ${Y.id}\n`
+                output.innerText += `Y PRESSED\n`
             }
 
             if (X.touched) {
-                output.innerText += `X PRESSED ${X.id}\n`
+                output.innerText += `X PRESSED\n`
             }
 
             if (LB.touched) {
@@ -170,12 +170,10 @@ function update() {
             // const {LJX, RJX} = axes;
 
             if (LJX.touched) {
-                console.log(LJX);
-                output.innerText += 'LJX PRESSED\n'
+                output.innerText += `LJX PRESSED ${LJX.angle}\n`
             }
             if (RJX.touched) {
-                console.log(RJX);
-                output.innerText += 'RJX PRESSED\n'
+                output.innerText += `RJX PRESSED ${RJX.angle}\n`
             }
         }
     })
