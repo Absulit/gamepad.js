@@ -106,3 +106,21 @@ update()
 // handRight.quaternion.fromArray(right.pose.orientation);
 
 ```
+## minification
+```sh
+brew install esbuild
+```
+
+```sh
+esbuild src/gamepad.js --bundle --minify --keep-names --format=esm --target=es2020 --outfile=src/gamepad.min.js
+
+
+esbuild src/gamepad.js \
+  --minify-syntax \
+  --minify-whitespace \
+  --keep-names \
+  --format=esm \
+  --target=esnext \
+  --outfile=src/gamepad.min.js
+
+```
