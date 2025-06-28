@@ -48,6 +48,16 @@ export const imgs = {
             RELEASED: 'img/tile_0590.png',
             PRESSED: 'img/tile_0556.png',
         },
-    }
+    },
 
+    TOPBUTTONS: {
+        LEFT: {
+            RELEASED: 'img/tile_0587.png',
+            PRESSED: 'img/tile_0553.png',
+        },
+        RIGHT: {
+            RELEASED: 'img/tile_0588.png',
+            PRESSED: 'img/tile_0554.png',
+        },
+    }
 }

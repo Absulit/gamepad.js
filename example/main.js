@@ -32,6 +32,12 @@ const triggersEl = {
     RIGHT: t.querySelector('#right'),
 }
 
+const tb = document.getElementById('topbuttons');
+const topButtonsEl = {
+    LEFT: tb.querySelector('#left'),
+    RIGHT: tb.querySelector('#right'),
+}
+
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
@@ -40,7 +46,7 @@ g.onConnected(e => {
     const { A, B, X, Y, RJX } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
     const { VIEW, MENU} = control0.buttons;
-    const { LT, RT} = control0.buttons;
+    const { LT, RT, LB, RB} = control0.buttons;
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
@@ -95,6 +101,11 @@ g.onConnected(e => {
     LT.onReleased(e => triggersEl.LEFT.src = imgs.TRIGGERS.LEFT.RELEASED);
     RT.onPushed(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.PRESSED);
     RT.onReleased(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.RELEASED);
+
+    LB.onPushed(e => topButtonsEl.LEFT.src = imgs.TOPBUTTONS.LEFT.PRESSED);
+    LB.onReleased(e => topButtonsEl.LEFT.src = imgs.TOPBUTTONS.LEFT.RELEASED);
+    RB.onPushed(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.PRESSED);
+    RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
 
 })
 
