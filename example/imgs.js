@@ -37,6 +37,17 @@ export const imgs = {
         RIGHT: 'img/tile_0710.png',
         DOWN: 'img/tile_0711.png',
         LEFT: 'img/tile_0712.png',
+    },
+
+    TRIGGERS: {
+        LEFT: {
+            RELEASED: 'img/tile_0589.png',
+            PRESSED: 'img/tile_0555.png',
+        },
+        RIGHT: {
+            RELEASED: 'img/tile_0590.png',
+            PRESSED: 'img/tile_0556.png',
+        },
     }
 
 }

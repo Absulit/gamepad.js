@@ -12,13 +12,13 @@ const g = new GamepadJS(gamepadInfo)
 
 const output = document.getElementById('output');
 const arrowsEl = document.getElementById('arrows');
-const b = document.getElementById('buttons');
 const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
 const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
 
 
+const b = document.getElementById('buttons');
 const buttonsEl = {
     A: b.querySelector('#a'),
     B: b.querySelector('#b'),
@@ -26,18 +26,21 @@ const buttonsEl = {
     Y: b.querySelector('#y'),
 }
 
+const t = document.getElementById('triggers');
+const triggersEl = {
+    LEFT: t.querySelector('#left'),
+    RIGHT: t.querySelector('#right'),
+}
+
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
     /** @type {Control} */
     const control0 = e.detail
-    console.log(control0.buttons)
     const { A, B, X, Y, RJX } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
     const { VIEW, MENU} = control0.buttons;
-    console.log(A);
-
-    arrowsEl.src = imgs.NONE
+    const { LT, RT} = control0.buttons;
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
@@ -71,16 +74,6 @@ g.onConnected(e => {
     UP.onReleased(onReleased);
     DOWN.onReleased(onReleased);
     //
-    RJX.onPushed(e => {
-
-
-    })
-    RJX.onReleased(e => {
-        console.log('---- ');
-    })
-    //
-    console.log(b, buttonsEl);
-
 
     A.onPushed(e => buttonsEl.A.src = imgs.A.PRESSED);
     B.onPushed(e => buttonsEl.B.src = imgs.B.PRESSED);
@@ -98,8 +91,10 @@ g.onConnected(e => {
     MENU.onPushed(e => menuEl.src = imgs.MENU.PRESSED);
     MENU.onReleased(e => menuEl.src = imgs.MENU.RELEASED);
 
-
-
+    LT.onPushed(e => triggersEl.LEFT.src = imgs.TRIGGERS.LEFT.PRESSED);
+    LT.onReleased(e => triggersEl.LEFT.src = imgs.TRIGGERS.LEFT.RELEASED);
+    RT.onPushed(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.PRESSED);
+    RT.onReleased(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.RELEASED);
 
 })
 
