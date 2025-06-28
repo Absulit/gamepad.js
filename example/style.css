@@ -1,4 +1,5 @@
 body {
+    font-family: 'Courier New', Courier, monospace;
     background-color: rgb(34, 34, 34);
     color: rgb(185, 185, 185);
 }
@@ -15,11 +16,15 @@ body {
     grid-template-columns: repeat(2, 64px);
     /* 2 rows */
     grid-template-rows: repeat(2, 1fr);
+    transform: rotate(-45deg);
+}
+
+#buttons img {
+    transform: rotate(45deg);
 }
 
 .log-box {
     display: inline-block;
-    font-family: 'Courier New', Courier, monospace;
     padding: 5px;
     margin-top: 1em;
     border-style: solid;
@@ -40,6 +45,14 @@ body {
     display: flex;
     width: 150px;
     height: 150px;
+    justify-content: center;
+    align-items: center;
+}
+
+.half-cell {
+    display: flex;
+    width: 200px;
+    height: 75px;
     justify-content: center;
     align-items: center;
 }
