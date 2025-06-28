@@ -210,7 +210,7 @@ function update() {
             if (LJX.touched) {
                 output.innerText += `LJX PRESSED ${LJX.angle}\n`
 
-                const percent = LJX.proportion + OFFSET;
+                const percent = (RJX.proportion + OFFSET) % 1;
 
                 if (QUARTER > percent && percent > 0) {
                     joystickLeftEl.src = imgs.JOYSTICK.UP
