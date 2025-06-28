@@ -213,8 +213,8 @@ export class GamepadJS extends EventTarget {
             const gamepad = gamepads[control?.index];
             const mapping = this.#mapping;
 
-            if (!mapping) {
-                return
+            if (!mapping || !gamepad) {
+                continue
             }
 
             control.pose = gamepad.pose;
