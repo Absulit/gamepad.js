@@ -237,6 +237,7 @@ export class GamepadJS extends EventTarget {
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                     button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
                     button.angle = Math.atan2(-button.y, button.x);
+                    button.proportion = button.angle / TAU; // TODO move to Button class
                     if (button.angle < 0) button.angle += TAU;
                 } else {
                     const value = gamepad.axes[mappingButton];
