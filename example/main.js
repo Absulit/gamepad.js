@@ -53,21 +53,11 @@ g.onConnected(e => {
     const { VIEW, MENU } = control0.buttons;
     const { LT, RT, LB, RB } = control0.buttons;
 
-    A.onPushed(e => {
-        addHistory('A - PUSHED');
-    })
-
-    A.addEventListener(Button.RELEASED, e => {
-        addHistory('A - RELEASED');
-    })
-
-    RJX.addEventListener(Button.PUSHED, e => {
-        addHistory('RJX - PUSHED');
-    })
-
-    RJX.addEventListener(Button.RELEASED, e => {
-        addHistory('RJX - RELEASED');
-    })
+    for(let key in control0.buttons){
+        const button = control0.buttons[key];
+        button.onPushed(e => addHistory(`${button.name} - PUSHED`))
+        button.onReleased(e => addHistory(`${button.name} - RELEASED`))
+    }
 
     LEFT.onPushed(e => arrowsEl.src = imgs.LEFT);
     RIGHT.onPushed(e => arrowsEl.src = imgs.RIGHT);
