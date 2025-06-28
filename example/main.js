@@ -13,6 +13,8 @@ const g = new GamepadJS(gamepadInfo)
 const output = document.getElementById('output');
 const arrowsEl = document.getElementById('arrows');
 const b = document.getElementById('buttons');
+const viewEl = document.getElementById('view');
+const menuEl = document.getElementById('menu');
 const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
 
@@ -32,6 +34,7 @@ g.onConnected(e => {
     console.log(control0.buttons)
     const { A, B, X, Y, RJX } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
+    const { VIEW, MENU} = control0.buttons;
     console.log(A);
 
     arrowsEl.src = imgs.NONE
@@ -88,6 +91,12 @@ g.onConnected(e => {
     B.onReleased(e => buttonsEl.B.src = imgs.B.RELEASED);
     X.onReleased(e => buttonsEl.X.src = imgs.X.RELEASED);
     Y.onReleased(e => buttonsEl.Y.src = imgs.Y.RELEASED);
+
+    VIEW.onPushed(e => viewEl.src = imgs.VIEW.PRESSED);
+    VIEW.onReleased(e => viewEl.src = imgs.VIEW.RELEASED);
+
+    MENU.onPushed(e => menuEl.src = imgs.MENU.PRESSED);
+    MENU.onReleased(e => menuEl.src = imgs.MENU.RELEASED);
 
 
 
@@ -226,9 +235,6 @@ function update() {
                 }
 
             }
-
-
-
 
         }
     })

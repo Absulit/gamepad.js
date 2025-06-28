@@ -22,6 +22,15 @@ export const imgs = {
         PRESSED: 'img/tile_0050.png',
     },
 
+    VIEW: {
+        RELEASED: 'img/tile_0650.png',
+        PRESSED: 'img/tile_0616.png',
+    },
+    MENU: {
+        RELEASED: 'img/tile_0651.png',
+        PRESSED: 'img/tile_0617.png',
+    },
+
     JOYSTICK: {
         NONE: 'img/tile_0713.png',
         UP: 'img/tile_0709.png',

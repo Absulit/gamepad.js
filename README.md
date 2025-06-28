@@ -105,6 +105,15 @@ update()
 // handRight.quaternion.fromArray(right.pose.orientation);
 
 ```
+
+## example assets
+
+Gamepad assets from the example directory from kenney.nl
+
+[input prompts pixel](https://kenney.nl/assets/input-prompts-pixel-16)
+Created/distributed by Kenney ([www.kenney.nl](www.kenney.nl))
+License: [(Creative Commons Zero, CC0)](https://creativecommons.org/publicdomain/zero/1.0/)
+
 ## minification
 ```sh
 # install esbuild
