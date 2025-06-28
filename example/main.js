@@ -11,12 +11,17 @@ import { imgs } from './imgs.js';
 const g = new GamepadJS(gamepadInfo)
 
 const output = document.getElementById('output');
+const history = document.getElementById('history');
 const arrowsEl = document.getElementById('arrows');
 const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
 const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
 
+
+function addHistory(v) {
+    history.innerText = v + '\n' + history.innerText;
+}
 
 const b = document.getElementById('buttons');
 const buttonsEl = {
@@ -45,27 +50,23 @@ g.onConnected(e => {
     const control0 = e.detail
     const { A, B, X, Y, RJX } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
-    const { VIEW, MENU} = control0.buttons;
-    const { LT, RT, LB, RB} = control0.buttons;
-
-    A.addEventListener(Button.PUSHED, e => {
-        console.log('A - PUSHED');
-    })
+    const { VIEW, MENU } = control0.buttons;
+    const { LT, RT, LB, RB } = control0.buttons;
 
     A.onPushed(e => {
-        console.log('A - PUSHED 2', e);
+        addHistory('A - PUSHED');
     })
 
     A.addEventListener(Button.RELEASED, e => {
-        console.log('A - RELEASED');
+        addHistory('A - RELEASED');
     })
 
     RJX.addEventListener(Button.PUSHED, e => {
-        console.log('RJX - PUSHED');
+        addHistory('RJX - PUSHED');
     })
 
     RJX.addEventListener(Button.RELEASED, e => {
-        console.log('RJX - RELEASED');
+        addHistory('RJX - RELEASED');
     })
 
     LEFT.onPushed(e => arrowsEl.src = imgs.LEFT);
@@ -215,7 +216,7 @@ function update() {
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
                     joystickRightEl.src = imgs.JOYSTICK.DOWN
                 }
-                if ( (QUARTER * 4) > percent && percent > (QUARTER * 3)) {
+                if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickRightEl.src = imgs.JOYSTICK.RIGHT
                 }
 
@@ -236,7 +237,7 @@ function update() {
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
                     joystickLeftEl.src = imgs.JOYSTICK.DOWN
                 }
-                if ( (QUARTER * 4) > percent && percent > (QUARTER * 3)) {
+                if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
                 }
 

@@ -16,3 +16,16 @@ body {
     /* 2 rows */
     grid-template-rows: repeat(2, 1fr);
 }
+
+.log-box {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace;
+    padding: 5px;
+    margin-top: 1em;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    height: 200px;
+    width: 46vw;
+    overflow: hidden;
+}
