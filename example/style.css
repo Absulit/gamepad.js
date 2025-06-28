@@ -29,3 +29,17 @@ body {
     width: 46vw;
     overflow: hidden;
 }
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell {
+    display: flex;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+}
