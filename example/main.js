@@ -1,4 +1,4 @@
-import { Button, Control, GamepadJS } from '../src/gamepad.js';
+import { Button, Control, GamepadJS, TAU } from '../src/gamepad.js';
 import { gamepadInfo } from '../src/gamepadMapping.js';
 import { imgs } from './imgs.js';
 
@@ -13,6 +13,9 @@ const g = new GamepadJS(gamepadInfo)
 const output = document.getElementById('output');
 const arrowsEl = document.getElementById('arrows');
 const b = document.getElementById('buttons');
+const joystickLeftEl = document.getElementById('joystickleft');
+const joystickRightEl = document.getElementById('joystickright');
+
 
 const buttonsEl = {
     A: b.querySelector('#a'),
@@ -58,6 +61,21 @@ g.onConnected(e => {
     UP.onPushed(e => arrowsEl.src = imgs.UP);
     DOWN.onPushed(e => arrowsEl.src = imgs.DOWN);
 
+    const onReleased = e => arrowsEl.src = imgs.NONE;
+
+    LEFT.onReleased(onReleased);
+    RIGHT.onReleased(onReleased);
+    UP.onReleased(onReleased);
+    DOWN.onReleased(onReleased);
+    //
+    RJX.onPushed(e => {
+
+
+    })
+    RJX.onReleased(e => {
+        console.log('---- ');
+    })
+    //
     console.log(b, buttonsEl);
 
 
@@ -71,12 +89,7 @@ g.onConnected(e => {
     X.onReleased(e => buttonsEl.X.src = imgs.X.RELEASED);
     Y.onReleased(e => buttonsEl.Y.src = imgs.Y.RELEASED);
 
-    const onReleased = e => arrowsEl.src = imgs.NONE;
 
-    LEFT.onReleased(onReleased);
-    RIGHT.onReleased(onReleased);
-    UP.onReleased(onReleased);
-    DOWN.onReleased(onReleased);
 
 
 })
@@ -84,6 +97,9 @@ g.onConnected(e => {
 g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
 })
+
+const QUARTER = .25;
+const OFFSET = QUARTER * .5;
 
 function update() {
     requestAnimationFrame(update);
@@ -169,12 +185,47 @@ function update() {
 
             // const {LJX, RJX} = axes;
 
-            if (LJX.touched) {
-                output.innerText += `LJX PRESSED ${LJX.angle}\n`
-            }
+            joystickRightEl.src = imgs.JOYSTICK.NONE
             if (RJX.touched) {
                 output.innerText += `RJX PRESSED ${RJX.angle}\n`
+
+                const percent = RJX.angle / TAU - OFFSET;
+                if (QUARTER > percent && percent > 0) {
+                    joystickRightEl.src = imgs.JOYSTICK.UP
+                }
+                if ((QUARTER * 2) > percent && percent > QUARTER) {
+                    joystickRightEl.src = imgs.JOYSTICK.LEFT
+                }
+                if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
+                    joystickRightEl.src = imgs.JOYSTICK.DOWN
+                }
+                if (1 > percent && percent > (QUARTER * 3)) {
+                    joystickRightEl.src = imgs.JOYSTICK.RIGHT
+                }
             }
+
+            joystickLeftEl.src = imgs.JOYSTICK.NONE
+            if (LJX.touched) {
+                output.innerText += `LJX PRESSED ${LJX.angle}\n`
+
+                const percent = LJX.angle / TAU - OFFSET;
+                if (QUARTER > percent && percent > 0) {
+                    joystickLeftEl.src = imgs.JOYSTICK.UP
+                }
+                if ((QUARTER * 2) > percent && percent > QUARTER) {
+                    joystickLeftEl.src = imgs.JOYSTICK.LEFT
+                }
+                if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
+                    joystickLeftEl.src = imgs.JOYSTICK.DOWN
+                }
+                if (1 > percent && percent > (QUARTER * 3)) {
+                    joystickLeftEl.src = imgs.JOYSTICK.RIGHT
+                }
+            }
+
+
+
+
         }
     })
 }

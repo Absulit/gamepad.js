@@ -4,20 +4,30 @@ export const imgs = {
     RIGHT: 'img/tile_0036.png',
     DOWN: 'img/tile_0037.png',
     LEFT: 'img/tile_0038.png',
-    A:{
+
+    A: {
         RELEASED: 'img/tile_0042.png',
         PRESSED: 'img/tile_0047.png',
     },
-    B:{
+    B: {
         RELEASED: 'img/tile_0043.png',
         PRESSED: 'img/tile_0048.png',
     },
-    X:{
+    X: {
         RELEASED: 'img/tile_0044.png',
         PRESSED: 'img/tile_0049.png',
     },
-    Y:{
+    Y: {
         RELEASED: 'img/tile_0045.png',
         PRESSED: 'img/tile_0050.png',
     },
+
+    JOYSTICK: {
+        NONE: 'img/tile_0713.png',
+        UP: 'img/tile_0709.png',
+        RIGHT: 'img/tile_0710.png',
+        DOWN: 'img/tile_0711.png',
+        LEFT: 'img/tile_0712.png',
+    }
+
 }

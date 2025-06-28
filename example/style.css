@@ -8,3 +8,11 @@ body {
     image-rendering: crisp-edges;
     /* fallback for older browsers */
 }
+
+#buttons {
+    display: grid;
+    /* 2 columns */
+    grid-template-columns: repeat(2, 64px);
+    /* 2 rows */
+    grid-template-rows: repeat(2, 1fr);
+}
