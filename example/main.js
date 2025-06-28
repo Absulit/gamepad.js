@@ -99,7 +99,7 @@ g.onDisconnected(e => {
 })
 
 const QUARTER = .25;
-const OFFSET = QUARTER * .5;
+const OFFSET = 1 - (QUARTER * .5);
 
 function update() {
     requestAnimationFrame(update);
@@ -189,7 +189,8 @@ function update() {
             if (RJX.touched) {
                 output.innerText += `RJX PRESSED ${RJX.angle}\n`
 
-                const percent = RJX.angle / TAU - OFFSET;
+                const percent = (RJX.proportion + OFFSET) % 1;
+
                 if (QUARTER > percent && percent > 0) {
                     joystickRightEl.src = imgs.JOYSTICK.UP
                 }
@@ -199,16 +200,18 @@ function update() {
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
                     joystickRightEl.src = imgs.JOYSTICK.DOWN
                 }
-                if (1 > percent && percent > (QUARTER * 3)) {
+                if ( (QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickRightEl.src = imgs.JOYSTICK.RIGHT
                 }
+
             }
 
             joystickLeftEl.src = imgs.JOYSTICK.NONE
             if (LJX.touched) {
                 output.innerText += `LJX PRESSED ${LJX.angle}\n`
 
-                const percent = LJX.proportion - OFFSET;
+                const percent = LJX.proportion + OFFSET;
+
                 if (QUARTER > percent && percent > 0) {
                     joystickLeftEl.src = imgs.JOYSTICK.UP
                 }
@@ -219,6 +222,9 @@ function update() {
                     joystickLeftEl.src = imgs.JOYSTICK.DOWN
                 }
                 if (1 > percent && percent > (QUARTER * 3)) {
+                    joystickLeftEl.src = imgs.JOYSTICK.RIGHT
+                }
+                if (0 > percent && percent > -OFFSET) {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
                 }
             }
