@@ -49,7 +49,7 @@ g.onConnected(e => {
 
     /** @type {Control} */
     const control0 = e.detail
-    const { A, B, X, Y, RJX } = control0.buttons;
+    const { A, B, X, Y } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
     const { VIEW, MENU } = control0.buttons;
     const { LT, RT, LB, RB } = control0.buttons;

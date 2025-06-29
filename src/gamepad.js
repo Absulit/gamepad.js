@@ -214,7 +214,12 @@ export class GamepadJS extends EventTarget {
 
     #onGamepadDisconnected = e => {
         if (this.#debug) {
-            console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
+            const { gamepad } = e;
+            const { index, id } = gamepad;
+            console.log(`%cGamepadJS.DISCONNECTED`,'font-weight: bold; color: #ccc');
+            console.table({
+                index, id, mapping: gamepad.mapping
+            })
         }
 
         this.#controls[`control${e.gamepad.index}`] = null;

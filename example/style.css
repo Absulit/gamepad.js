@@ -56,3 +56,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+.caption{
+    margin-left: 1em;
+}
