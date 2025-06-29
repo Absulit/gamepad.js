@@ -9,9 +9,11 @@ import { imgs } from './imgs.js';
 
 
 const g = new GamepadJS(gamepadInfo)
+g.debug = true;
 
 const output = document.getElementById('output');
 const history = document.getElementById('history');
+const connectedMessage = document.getElementById('connectedmsg');
 const arrowsEl = document.getElementById('arrows');
 const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
@@ -43,19 +45,41 @@ const topButtonsEl = {
     RIGHT: tb.querySelector('#right'),
 }
 
+/**
+ * To show if the device is connected on the screen
+ * @param {boolean} connected
+ */
+function setConnectedMessage(connected) {
+    connectedMessage.innerText = 'device disconnected'
+    connectedMessage.classList.remove('connected')
+    if (connected) {
+        connectedMessage.innerText = 'device connected'
+        connectedMessage.classList.add('connected')
+    }
+}
+
+setConnectedMessage();
+
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
+    setConnectedMessage(true);
+
     /** @type {Control} */
     const control0 = e.detail
-    const { A, B, X, Y, RJX } = control0.buttons;
+    const { A, B, X, Y } = control0.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
     const { VIEW, MENU } = control0.buttons;
     const { LT, RT, LB, RB } = control0.buttons;
 
-    for(let key in control0.buttons){
+    for (let key in control0.buttons) {
         const button = control0.buttons[key];
-        button.onPushed(e => addHistory(`${button.name} - PUSHED`))
+        let index = button.index;
+        if (typeof button.index === 'object') {
+            const { x, y } = button.index;
+            index = `{x:${x}, y:${y}}`;
+        }
+        button.onPushed(e => addHistory(`${button.name} - PUSHED, Index: ${index}`))
         button.onReleased(e => addHistory(`${button.name} - RELEASED`))
     }
 
@@ -102,6 +126,7 @@ g.onConnected(e => {
 
 g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
+    setConnectedMessage();
 })
 
 const QUARTER = .25;
