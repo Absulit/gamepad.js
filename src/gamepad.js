@@ -12,6 +12,8 @@
 
 import { xboxMapping } from './gamepadMapping.js';
 
+export const TAU = Math.PI * 2;
+
 /**
  * Button
  */
@@ -26,6 +28,10 @@ export class Button extends EventTarget {
     constructor(name) {
         super()
         this.#name = name;
+    }
+
+    get name() {
+        return this.#name;
     }
 
     /**
@@ -207,8 +213,8 @@ export class GamepadJS extends EventTarget {
             const gamepad = gamepads[control?.index];
             const mapping = this.#mapping;
 
-            if (!mapping) {
-                return
+            if (!mapping || !gamepad) {
+                continue
             }
 
             control.pose = gamepad.pose;
@@ -230,7 +236,9 @@ export class GamepadJS extends EventTarget {
                     button = control.buttons[buttonName];
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                     button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                    button.angle = Math.atan2(button.y, button.x);
+                    button.angle = Math.atan2(-button.y, button.x);
+                    button.proportion = button.angle / TAU; // TODO move to Button class
+                    if (button.angle < 0) button.angle += TAU;
                 } else {
                     const value = gamepad.axes[mappingButton];
                     button = control.buttons[buttonName]
