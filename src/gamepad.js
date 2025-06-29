@@ -147,6 +147,10 @@ export class Control extends EventTarget {
             this.#gamepad.vibrates = false
         });
     }
+
+    get hasVibrationActuator() {
+        return !!this.#gamepad.vibrationActuator;
+    }
 }
 
 /**
@@ -187,7 +191,7 @@ export class GamepadJS extends EventTarget {
         const { index, id } = gamepad;
 
         if (this.#debug) {
-            console.log(`%cGamepadJS.CONNECTED`,'font-weight: bold; color: #ccc');
+            console.log(`%cGamepadJS.CONNECTED`, 'font-weight: bold; color: #ccc');
             console.table({
                 index, id, mapping: gamepad.mapping
             })
@@ -203,6 +207,7 @@ export class GamepadJS extends EventTarget {
         console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
+            // TODO controls.addButton method
             control.buttons[buttonName] = new Button(buttonName, this.#mapping.buttons[buttonName]);
         }
         for (let buttonName in this.#mapping.axes) {
@@ -216,7 +221,7 @@ export class GamepadJS extends EventTarget {
         if (this.#debug) {
             const { gamepad } = e;
             const { index, id } = gamepad;
-            console.log(`%cGamepadJS.DISCONNECTED`,'font-weight: bold; color: #ccc');
+            console.log(`%cGamepadJS.DISCONNECTED`, 'font-weight: bold; color: #ccc');
             console.table({
                 index, id, mapping: gamepad.mapping
             })
@@ -252,7 +257,11 @@ export class GamepadJS extends EventTarget {
             const mapping = this.#mapping;
 
             if (!mapping || !gamepad) {
-                continue
+                continue;
+            }
+
+            if(!control.hasVibrationActuator){
+                control.gamepad = gamepad;
             }
 
             control.pose = gamepad.pose;
