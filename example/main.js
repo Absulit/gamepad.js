@@ -13,6 +13,7 @@ g.debug = true;
 
 const output = document.getElementById('output');
 const history = document.getElementById('history');
+const connectedMessage = document.getElementById('connectedmsg');
 const arrowsEl = document.getElementById('arrows');
 const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
@@ -44,8 +45,25 @@ const topButtonsEl = {
     RIGHT: tb.querySelector('#right'),
 }
 
+/**
+ * To show if the device is connected on the screen
+ * @param {boolean} connected
+ */
+function setConnectedMessage(connected) {
+    connectedMessage.innerText = 'device disconnected'
+    connectedMessage.classList.remove('connected')
+    if (connected) {
+        connectedMessage.innerText = 'device connected'
+        connectedMessage.classList.add('connected')
+    }
+}
+
+setConnectedMessage();
+
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
+
+    setConnectedMessage(true);
 
     /** @type {Control} */
     const control0 = e.detail
@@ -108,6 +126,7 @@ g.onConnected(e => {
 
 g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
+    setConnectedMessage();
 })
 
 const QUARTER = .25;

@@ -57,6 +57,17 @@ body {
     align-items: center;
 }
 
-.caption{
+.caption {
     margin-left: 1em;
+}
+
+#connectedmsg {
+    margin: 1em;
+    background-color: rgb(68, 31, 31);
+    padding: .5em;
+    border-radius: 10px;
+}
+
+#connectedmsg.connected {
+    background-color: rgb(42, 68, 31);
 }
