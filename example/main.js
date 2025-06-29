@@ -176,11 +176,11 @@ function update() {
             }
 
             if (LT.touched) {
-                output.innerText += 'LT PRESSED\n'
+                output.innerText += `LT PRESSED\n\tValue: ${LT.value}\n`;
                 control0.vibrate(100, LT.value)
             }
             if (RT.touched) {
-                output.innerText += 'RT PRESSED\n'
+                output.innerText += `RT PRESSED\n\tValue: ${RT.value}\n`;
                 control0.vibrate(100, RT.value)
             }
 
@@ -219,7 +219,7 @@ function update() {
 
             joystickRightEl.src = imgs.JOYSTICK.NONE
             if (RJX.touched) {
-                output.innerText += `RJX PRESSED ${RJX.angle}\n`
+                output.innerText += `RJX PRESSED\n\tAngle: ${RJX.angle}\n\tDistance: ${RJX.distance}\n`
 
                 const percent = (RJX.proportion + OFFSET) % 1;
 
@@ -240,7 +240,7 @@ function update() {
 
             joystickLeftEl.src = imgs.JOYSTICK.NONE
             if (LJX.touched) {
-                output.innerText += `LJX PRESSED ${LJX.angle}\n`
+                output.innerText += `LJX PRESSED\n\tAngle: ${LJX.angle}\n\tDistance: ${LJX.distance}\n`
 
                 const percent = (LJX.proportion + OFFSET) % 1;
 
