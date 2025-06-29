@@ -19,6 +19,7 @@ const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
 const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
+const sub = document.getElementById('sub');
 
 
 function addHistory(v) {
@@ -255,6 +256,12 @@ function update() {
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
                 }
+
+                let {left, top} = getComputedStyle(sub)
+                left = parseFloat(left) + LJX.x * LJX.distance * 2;
+                top = parseFloat(top) + LJX.y * LJX.distance * 2;
+                sub.style.left = `${left}px`;
+                sub.style.top = `${top}px`;
 
             }
 

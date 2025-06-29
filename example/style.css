@@ -71,3 +71,13 @@ body {
 #connectedmsg.connected {
     background-color: rgb(42, 68, 31);
 }
+
+.sub {
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    z-index: 10;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}

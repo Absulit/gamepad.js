@@ -245,6 +245,8 @@ export class GamepadJS extends EventTarget {
 
     #isObject = v => typeof v === 'object' && v !== null;
 
+    #distance = (x, y) => Math.sqrt(x * x + y * y);
+
     /**
      * To be called in the `requestAnimationFrame`
      * @param {(gamepads: Object.<string, Control>)} f callback
@@ -288,6 +290,7 @@ export class GamepadJS extends EventTarget {
                     button.angle = Math.atan2(-button.y, button.x);
                     button.proportion = button.angle / TAU; // TODO move to Button class
                     if (button.angle < 0) button.angle += TAU;
+                    button.distance = this.#distance(button.x, button.y);
                 } else {
                     const value = gamepad.axes[mappingButton];
                     button = control.buttons[buttonName];
