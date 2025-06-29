@@ -81,3 +81,7 @@ body {
     left: 0px;
     top: 0px;
 }
+
+.sub.right {
+    transform: scale(-1, 1);
+}

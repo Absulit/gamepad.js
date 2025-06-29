@@ -219,7 +219,7 @@ function update() {
 
             joystickRightEl.src = imgs.JOYSTICK.NONE
             if (RJX.touched) {
-                output.innerText += `RJX PRESSED\n\tAngle: ${RJX.angle}\n\tDistance: ${RJX.distance}\n`
+                output.innerText += `RJX PRESSED\n\tAngle: ${RJX.angle}\n\tDistance: ${RJX.distance}\n\tx: ${RJX.x}\n\ty: ${RJX.y}\n`
 
                 const percent = (RJX.proportion + OFFSET) % 1;
 
@@ -240,7 +240,7 @@ function update() {
 
             joystickLeftEl.src = imgs.JOYSTICK.NONE
             if (LJX.touched) {
-                output.innerText += `LJX PRESSED\n\tAngle: ${LJX.angle}\n\tDistance: ${LJX.distance}\n`
+                output.innerText += `LJX PRESSED\n\tAngle: ${LJX.angle}\n\tDistance: ${LJX.distance}\n\tx: ${LJX.x}\n\ty: ${LJX.y}\n`
 
                 const percent = (LJX.proportion + OFFSET) % 1;
 
@@ -249,15 +249,23 @@ function update() {
                 }
                 if ((QUARTER * 2) > percent && percent > QUARTER) {
                     joystickLeftEl.src = imgs.JOYSTICK.LEFT
+
                 }
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
                     joystickLeftEl.src = imgs.JOYSTICK.DOWN
                 }
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
+
                 }
 
-                let {left, top} = getComputedStyle(sub)
+                // flip sub going left or right
+                sub.classList.remove('right');
+                if (LJX.x > 0) {
+                    sub.classList.add('right');
+                }
+
+                let { left, top } = getComputedStyle(sub)
                 left = parseFloat(left) + LJX.x * LJX.distance * 2;
                 top = parseFloat(top) + LJX.y * LJX.distance * 2;
                 sub.style.left = `${left}px`;
