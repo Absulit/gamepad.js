@@ -9,6 +9,7 @@ import { imgs } from './imgs.js';
 
 
 const g = new GamepadJS(gamepadInfo)
+g.debug = true;
 
 const output = document.getElementById('output');
 const history = document.getElementById('history');
@@ -53,9 +54,14 @@ g.onConnected(e => {
     const { VIEW, MENU } = control0.buttons;
     const { LT, RT, LB, RB } = control0.buttons;
 
-    for(let key in control0.buttons){
+    for (let key in control0.buttons) {
         const button = control0.buttons[key];
-        button.onPushed(e => addHistory(`${button.name} - PUSHED`))
+        let index = button.index;
+        if (typeof button.index === 'object') {
+            const { x, y } = button.index;
+            index = `{x:${x}, y:${y}}`;
+        }
+        button.onPushed(e => addHistory(`${button.name} - PUSHED, Index: ${index}`))
         button.onReleased(e => addHistory(`${button.name} - RELEASED`))
     }
 
