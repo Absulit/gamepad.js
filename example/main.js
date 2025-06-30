@@ -125,10 +125,12 @@ g.onConnected(e => {
     RB.onPushed(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.PRESSED);
     RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
 
+    sub.classList.remove('hide');
 })
 
 g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
+    sub.classList.add('hide');
     setConnectedMessage();
 })
 
