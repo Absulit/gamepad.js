@@ -21,6 +21,8 @@ const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
 const sub = document.getElementById('sub');
 
+sub.rotation = 0; // rotation holder
+
 
 function addHistory(v) {
     history.innerText = v + '\n' + history.innerText;
@@ -156,8 +158,10 @@ function update() {
                 output.innerText += 'B PRESSED\n'
             }
 
+            sub.shake = false;
             if (A.touched && B.touched) {
                 control0.vibrate(100)
+                sub.shake = true;
             }
 
             if (Y.touched) {
@@ -235,6 +239,7 @@ function update() {
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickRightEl.src = imgs.JOYSTICK.RIGHT
                 }
+                sub.rotation += RJX.x * .1 * (180 / Math.PI);
 
             }
 
@@ -256,23 +261,46 @@ function update() {
                 }
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
-
-                }
-
-                // flip sub going left or right
-                sub.classList.remove('right');
-                if (LJX.x > 0) {
-                    sub.classList.add('right');
                 }
 
                 let { left, top } = getComputedStyle(sub)
                 left = parseFloat(left) + LJX.x * LJX.distance * 2;
                 top = parseFloat(top) + LJX.y * LJX.distance * 2;
+                if (left < -sub.width) {
+                    left = window.innerWidth;
+                }
+                if (left > (window.innerWidth + sub.width)) {
+                    left = 0;
+                }
+                if (top > (window.innerHeight - sub.height)) {
+                    top = window.innerHeight - sub.height
+                    control0.vibrate(100,1);
+                }
+                if(top < 0){
+                    top = 0
+                    control0.vibrate(100,1);
+                }
+
                 sub.style.left = `${left}px`;
                 sub.style.top = `${top}px`;
-
             }
 
+            if (LJX.touched || RJX.touched) {
+                // flip sub going left or right
+                sub.classList.remove('right');
+                sub.scale = 'scale(1, 1)'
+                if (LJX.x > 0) {
+                    sub.classList.add('right');
+                    sub.scale = 'scale(-1, 1)';
+                }
+            }
+            let shake = ''
+            if (sub.shake) {
+                const x = Math.floor(Math.random() * 5);
+                const y = Math.floor(Math.random() * 5);
+                shake = `translate(${x}px, ${y}px)`;
+            }
+            sub.style.transform = `${sub.scale} ${shake}`;
         }
     })
 }

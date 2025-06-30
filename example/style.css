@@ -2,6 +2,7 @@ body {
     font-family: 'Courier New', Courier, monospace;
     background-color: rgb(34, 34, 34);
     color: rgb(185, 185, 185);
+    overflow: hidden;
 }
 
 .pixelated {
@@ -80,8 +81,4 @@ body {
     position: absolute;
     left: 0px;
     top: 0px;
-}
-
-.sub.right {
-    transform: scale(-1, 1);
 }
