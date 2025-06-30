@@ -87,14 +87,21 @@ export class Button extends EventTarget {
         return this.#value
     }
 
+    /**
+     * only used for Firefox fix
+     */
     set value(v) {
         this.#lastValue = this.#value;
         this.#value = v;
         this.#touched = -.9 < v;
-        // to solve a bug if the value starts in zero
+        // to solve a bug if the value starts in zero (Firefox)
         if (this.#lastValue === this.#value && this.#value === 0) {
             this.#touched = false;
         }
+        if (this.#touched) {
+            this.#value = (this.#value + 1) * .5;
+        }
+        this.#dispatchEventIfPushed();
     }
 
     /**
@@ -116,11 +123,11 @@ export class Button extends EventTarget {
 
             this.#touched = (Math.abs(x) > .1) || (Math.abs(y) > .1);
         }
+        this.#dispatchEventIfPushed();
     }
 
-
-    dispatchEventIfPushed() {
-        if (this.touched && !this.#pushed) {
+    #dispatchEventIfPushed() {
+        if (this.#touched && !this.#pushed) {
             this.dispatchEvent(new Event(Button.PUSHED));
             this.#pushed = true;
             this.#released = false;
@@ -133,7 +140,7 @@ export class Button extends EventTarget {
                 console.log(`Button PUSHED: Name: ${this.#name}, Index: ${index}`);
             }
         }
-        if (!this.touched && !this.#released) {
+        if (!this.#touched && !this.#released) {
             this.dispatchEvent(new Event(Button.RELEASED));
             this.#pushed = false;
             this.#released = true;
@@ -341,10 +348,7 @@ export class GamepadJS extends EventTarget {
                 const button = control.buttons[buttonName];
                 const gamepadButton = gamepad.buttons[button.index];
                 button.debug = this.#debug;
-                console.log(gamepadButton.value);
-
-                button.setProperties(gamepadButton)
-                button.dispatchEventIfPushed();
+                button.setProperties(gamepadButton);
             }
 
             for (let buttonName in mapping.axes) {
@@ -357,9 +361,9 @@ export class GamepadJS extends EventTarget {
                 if (isObject) {
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                 } else {
+                    // Firefox fix
                     button.value = gamepad.axes[mappingButton]
                 }
-                button.dispatchEventIfPushed();
             }
         }
 
