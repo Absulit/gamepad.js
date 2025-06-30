@@ -188,10 +188,12 @@ function update() {
             if (LT.touched) {
                 output.innerText += `LT PRESSED\n\tValue: ${LT.value}\n`;
                 control0.vibrate(100, LT.value)
+                sub.shake = true;
             }
             if (RT.touched) {
                 output.innerText += `RT PRESSED\n\tValue: ${RT.value}\n`;
                 control0.vibrate(100, RT.value)
+                sub.shake = true;
             }
 
             if (VIEW.touched) {
@@ -295,7 +297,7 @@ function update() {
                 // flip sub going left or right
                 sub.classList.remove('right');
                 sub.scale = 'scale(1, 1)'
-                if (LJX.x > 0) {
+                if (RJX.x > 0) {
                     sub.classList.add('right');
                     sub.scale = 'scale(-1, 1)';
                 }
