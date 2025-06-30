@@ -26,7 +26,18 @@ export class Button extends EventTarget {
     #name = null;
     #index = null;
     #debug = false;
+    #angle = 0;
+    #distance = 0;
+    #proportion = 0;
+    #touched = false;
+    #value = 0;
+    #lastValue = 0;
 
+    /**
+     *
+     * @param {string} name
+     * @param {Number} index
+     */
     constructor(name, index) {
         super()
         this.#name = name;
@@ -49,17 +60,74 @@ export class Button extends EventTarget {
     }
 
     /**
+     * angle in radians
+     * This is done by GamepadJS, you don't have to set it.
+     */
+    get angle() {
+        return this.#angle;
+    }
+
+
+    /**
+     * distance from the center of the joystick
+     */
+    get distance() {
+        return this.#distance;
+    }
+
+    get proportion() {
+        return this.#proportion;
+    }
+
+    get touched() {
+        return this.#touched;
+    }
+
+    get value() {
+        return this.#value
+    }
+
+    /**
+     * only used for Firefox fix
+     */
+    set value(v) {
+        this.#lastValue = this.#value;
+        this.#value = v;
+        this.#touched = -.9 < v;
+        // to solve a bug if the value starts in zero (Firefox)
+        if (this.#lastValue === this.#value && this.#value === 0) {
+            this.#touched = false;
+        }
+        if (this.#touched) {
+            this.#value = (this.#value + 1) * .5;
+        }
+        this.#dispatchEventIfPushed();
+    }
+
+    /**
      * To copy properties from the Gamepad API button
      * @param {Object} v
      */
-    setProperties(v) {
-        for (let p in v) {
-            this[p] = v[p]
+    setProperties({ pressed, touched, value, x, y }) {
+        this.pressed = pressed
+        this.#touched = touched
+        this.x = x;
+        this.y = y;
+        this.#value = value;
+        if (this.x && this.y) {
+            const { x, y } = this; // TODO replace with #x and #y
+            this.#distance = Math.sqrt(x * x + y * y);
+            this.#angle = Math.atan2(-y, x);
+            this.#proportion = this.#angle / TAU;
+            if (this.#angle < 0) this.#angle += TAU;
+
+            this.#touched = (Math.abs(x) > .1) || (Math.abs(y) > .1);
         }
+        this.#dispatchEventIfPushed();
     }
 
-    dispatchEventIfPushed() {
-        if (this.touched && !this.#pushed) {
+    #dispatchEventIfPushed() {
+        if (this.#touched && !this.#pushed) {
             this.dispatchEvent(new Event(Button.PUSHED));
             this.#pushed = true;
             this.#released = false;
@@ -72,7 +140,7 @@ export class Button extends EventTarget {
                 console.log(`Button PUSHED: Name: ${this.#name}, Index: ${index}`);
             }
         }
-        if (!this.touched && !this.#released) {
+        if (!this.#touched && !this.#released) {
             this.dispatchEvent(new Event(Button.RELEASED));
             this.#pushed = false;
             this.#released = true;
@@ -148,6 +216,15 @@ export class Control extends EventTarget {
         });
     }
 
+    /**
+     * Add an button with alias `name`
+     * @param {string} name Name the button will be called on later
+     * @param {Number} index button index from the Gamepad API
+     */
+    addButton(name, index) {
+        this.#buttons[name] = new Button(name, index);
+    }
+
     get hasVibrationActuator() {
         return !!this.#gamepad.vibrationActuator;
     }
@@ -207,11 +284,10 @@ export class GamepadJS extends EventTarget {
         console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
-            // TODO controls.addButton method
-            control.buttons[buttonName] = new Button(buttonName, this.#mapping.buttons[buttonName]);
+            control.addButton(buttonName, this.#mapping.buttons[buttonName]);
         }
         for (let buttonName in this.#mapping.axes) {
-            control.buttons[buttonName] = new Button(buttonName, this.#mapping.axes[buttonName]);
+            control.addButton(buttonName, this.#mapping.axes[buttonName]);
         }
 
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
@@ -245,7 +321,7 @@ export class GamepadJS extends EventTarget {
 
     #isObject = v => typeof v === 'object' && v !== null;
 
-    #distance = (x, y) => Math.sqrt(x * x + y * y);
+    // #distance = (x, y) => Math.sqrt(x * x + y * y);
 
     /**
      * To be called in the `requestAnimationFrame`
@@ -262,7 +338,7 @@ export class GamepadJS extends EventTarget {
                 continue;
             }
 
-            if(!control.hasVibrationActuator){
+            if (!control.hasVibrationActuator) {
                 control.gamepad = gamepad;
             }
 
@@ -272,38 +348,22 @@ export class GamepadJS extends EventTarget {
                 const button = control.buttons[buttonName];
                 const gamepadButton = gamepad.buttons[button.index];
                 button.debug = this.#debug;
-                button.setProperties(gamepadButton)
-                button.dispatchEventIfPushed();
+                button.setProperties(gamepadButton);
             }
 
             for (let buttonName in mapping.axes) {
                 const mappingButton = mapping.axes[buttonName];
                 const isObject = this.#isObject(mappingButton);
 
-                let button = control.buttons[buttonName];
+                const button = control.buttons[buttonName];
+                button.debug = this.#debug;
 
                 if (isObject) {
-                    button = control.buttons[buttonName];
-                    button.debug = this.#debug;
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
-                    button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                    button.angle = Math.atan2(-button.y, button.x);
-                    button.proportion = button.angle / TAU; // TODO move to Button class
-                    if (button.angle < 0) button.angle += TAU;
-                    button.distance = this.#distance(button.x, button.y);
                 } else {
-                    const value = gamepad.axes[mappingButton];
-                    button = control.buttons[buttonName];
-                    button.debug = this.#debug;
-                    button.lastValue = button.value;
-                    button.value = value;
-                    button.touched = -.9 < value;
-                    // to solve a bug if the value starts in zero
-                    if (button.lastValue == button.value && button.value == 0) {
-                        button.touched = false;
-                    }
+                    // Firefox fix
+                    button.value = gamepad.axes[mappingButton]
                 }
-                button.dispatchEventIfPushed();
             }
         }
 
