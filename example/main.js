@@ -1,10 +1,10 @@
-// import { Button, Control, GamepadJS, TAU } from '../src/gamepad.js';
-// import { gamepadInfo } from '../src/gamepadMapping.js';
+import { Button, Control, GamepadJS, TAU } from '../src/gamepad.js';
+import { gamepadInfo } from '../src/gamepadMapping.js';
 import { imgs } from './imgs.js';
 
 
 // minified
-import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+// import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
 
 
