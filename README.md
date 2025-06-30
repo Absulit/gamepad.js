@@ -11,8 +11,7 @@ Works with XBOX controllers. I have to test more devices. I will update here whe
 ```javascript
 // from example/main.js
 
-import { Button, Control, GamepadJS } from '../src/gamepad.js';
-import { gamepadInfo } from '../src/gamepadMapping.js';
+import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
 // if no gamepadInfo is set it defaults to one of the controllers
 const g = new GamepadJS(gamepadInfo)
@@ -105,4 +104,26 @@ update()
 // handRight.position.fromArray(right.pose.position);
 // handRight.quaternion.fromArray(right.pose.orientation);
 
+```
+
+## example assets
+
+Gamepad assets from the example directory from kenney.nl
+[input prompts pixel](https://kenney.nl/assets/input-prompts-pixel-16)
+Created/distributed by Kenney ([www.kenney.nl](www.kenney.nl))
+License: [(Creative Commons Zero, CC0)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+
+Sub asset made by [swonky](https://opengameart.org/users/zwonky):
+[submarines](https://opengameart.org/content/submarines-in-arne16)
+
+## minification
+```sh
+# install esbuild
+brew install esbuild
+```
+
+```sh
+# run script to build min
+sh build.sh
 ```

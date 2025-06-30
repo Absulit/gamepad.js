@@ -12,6 +12,8 @@
 
 import { xboxMapping } from './gamepadMapping.js';
 
+export const TAU = Math.PI * 2;
+
 /**
  * Button
  */
@@ -19,13 +21,31 @@ import { xboxMapping } from './gamepadMapping.js';
 export class Button extends EventTarget {
     static PUSHED = 'PUSHED';
     static RELEASED = 'RELEASED';
-    #pushed = false
-    #released = true
+    #pushed = false;
+    #released = true;
     #name = null;
+    #index = null;
+    #debug = false;
 
-    constructor(name) {
+    constructor(name, index) {
         super()
         this.#name = name;
+        this.#index = index;
+    }
+
+    get name() {
+        return this.#name;
+    }
+
+    get index() {
+        return this.#index
+    }
+
+    /**
+     * @param {boolean} v
+     */
+    set debug(v) {
+        this.#debug = v;
     }
 
     /**
@@ -43,7 +63,14 @@ export class Button extends EventTarget {
             this.dispatchEvent(new Event(Button.PUSHED));
             this.#pushed = true;
             this.#released = false;
-
+            if (this.#debug) {
+                let index = this.#index;
+                if (typeof this.#index === 'object') {
+                    const { x, y } = this.#index;
+                    index = `{x:${x}, y:${y}}`;
+                }
+                console.log(`Button PUSHED: Name: ${this.#name}, Index: ${index}`);
+            }
         }
         if (!this.touched && !this.#released) {
             this.dispatchEvent(new Event(Button.RELEASED));
@@ -120,6 +147,10 @@ export class Control extends EventTarget {
             this.#gamepad.vibrates = false
         });
     }
+
+    get hasVibrationActuator() {
+        return !!this.#gamepad.vibrationActuator;
+    }
 }
 
 /**
@@ -135,6 +166,7 @@ export class GamepadJS extends EventTarget {
     /** @type {Object.<string, Control>} */
     #controls = {};
     #mapping = null;
+    #debug = false;
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -157,8 +189,14 @@ export class GamepadJS extends EventTarget {
     #onGamepadConnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
-        console.log('---- #onGamepadConnected', index, id);
-        console.log('---- #onGamepadConnected', gamepad.constructor.name);
+
+        if (this.#debug) {
+            console.log(`%cGamepadJS.CONNECTED`, 'font-weight: bold; color: #ccc');
+            console.table({
+                index, id, mapping: gamepad.mapping
+            })
+        }
+
         const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
         this.#mapping = xboxMapping;
@@ -166,18 +204,29 @@ export class GamepadJS extends EventTarget {
             this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
         }
 
+        console.log(gamepad.mapping);
+
         for (let buttonName in this.#mapping.buttons) {
-            control.buttons[buttonName] = new Button(buttonName);
+            // TODO controls.addButton method
+            control.buttons[buttonName] = new Button(buttonName, this.#mapping.buttons[buttonName]);
         }
         for (let buttonName in this.#mapping.axes) {
-            control.buttons[buttonName] = new Button(buttonName);
+            control.buttons[buttonName] = new Button(buttonName, this.#mapping.axes[buttonName]);
         }
 
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
     #onGamepadDisconnected = e => {
-        console.log('---- #onGamepadDisconnected', e.gamepad.index, e.gamepad.id);
+        if (this.#debug) {
+            const { gamepad } = e;
+            const { index, id } = gamepad;
+            console.log(`%cGamepadJS.DISCONNECTED`, 'font-weight: bold; color: #ccc');
+            console.table({
+                index, id, mapping: gamepad.mapping
+            })
+        }
+
         this.#controls[`control${e.gamepad.index}`] = null;
         this.dispatchEvent(new Event(GamepadJS.DISCONNECTED));
     }
@@ -196,6 +245,8 @@ export class GamepadJS extends EventTarget {
 
     #isObject = v => typeof v === 'object' && v !== null;
 
+    #distance = (x, y) => Math.sqrt(x * x + y * y);
+
     /**
      * To be called in the `requestAnimationFrame`
      * @param {(gamepads: Object.<string, Control>)} f callback
@@ -207,15 +258,20 @@ export class GamepadJS extends EventTarget {
             const gamepad = gamepads[control?.index];
             const mapping = this.#mapping;
 
-            if (!mapping) {
-                return
+            if (!mapping || !gamepad) {
+                continue;
+            }
+
+            if(!control.hasVibrationActuator){
+                control.gamepad = gamepad;
             }
 
             control.pose = gamepad.pose;
 
             for (let buttonName in mapping.buttons) {
-                const gamepadButton = gamepad.buttons[mapping.buttons[buttonName]];
                 const button = control.buttons[buttonName];
+                const gamepadButton = gamepad.buttons[button.index];
+                button.debug = this.#debug;
                 button.setProperties(gamepadButton)
                 button.dispatchEventIfPushed();
             }
@@ -228,12 +284,17 @@ export class GamepadJS extends EventTarget {
 
                 if (isObject) {
                     button = control.buttons[buttonName];
+                    button.debug = this.#debug;
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                     button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
-                    button.angle = Math.atan2(button.y, button.x);
+                    button.angle = Math.atan2(-button.y, button.x);
+                    button.proportion = button.angle / TAU; // TODO move to Button class
+                    if (button.angle < 0) button.angle += TAU;
+                    button.distance = this.#distance(button.x, button.y);
                 } else {
                     const value = gamepad.axes[mappingButton];
-                    button = control.buttons[buttonName]
+                    button = control.buttons[buttonName];
+                    button.debug = this.#debug;
                     button.lastValue = button.value;
                     button.value = value;
                     button.touched = -.9 < value;
@@ -247,5 +308,12 @@ export class GamepadJS extends EventTarget {
         }
 
         f(this.#controls);
+    }
+
+    /** Enable to see info about the device in the console.
+     * @param {boolean} v
+     */
+    set debug(v) {
+        this.#debug = v;
     }
 }

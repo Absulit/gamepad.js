@@ -1,4 +1,104 @@
-body{
+body {
+    font-family: 'Courier New', Courier, monospace;
     background-color: rgb(34, 34, 34);
     color: rgb(185, 185, 185);
+    overflow: hidden;
+}
+
+a {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+}
+
+a:visited {
+    color: rgb(185, 185, 185);
+}
+
+.pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    /* fallback for older browsers */
+}
+
+#buttons {
+    display: grid;
+    /* 2 columns */
+    grid-template-columns: repeat(2, 64px);
+    /* 2 rows */
+    grid-template-rows: repeat(2, 1fr);
+    transform: rotate(-45deg);
+}
+
+#buttons img {
+    transform: rotate(45deg);
+}
+
+.log-box {
+    display: inline-block;
+    padding: 5px;
+    margin: 1em;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    height: 200px;
+    width: 46vw;
+    overflow: hidden;
+    white-space: pre;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell {
+    display: flex;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+}
+
+.half-cell {
+    display: flex;
+    width: 200px;
+    height: 75px;
+    justify-content: center;
+    align-items: center;
+}
+
+.caption {
+    margin-left: 1em;
+}
+
+#connectedmsg {
+    margin: 1em;
+    background-color: rgb(68, 31, 31);
+    padding: .5em;
+    border-radius: 10px;
+}
+
+#connectedmsg.connected {
+    background-color: rgb(42, 68, 31);
+}
+
+.sub {
+    width: 50px;
+    height: 50px;
+    z-index: 10;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.hide {
+    display: none;
 }
