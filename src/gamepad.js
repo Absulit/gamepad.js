@@ -26,6 +26,7 @@ export class Button extends EventTarget {
     #name = null;
     #index = null;
     #debug = false;
+    #angle = 0;
 
     /**
      *
@@ -51,6 +52,21 @@ export class Button extends EventTarget {
      */
     set debug(v) {
         this.#debug = v;
+    }
+
+    /**
+     * angle in radians
+     */
+    get angle() {
+        return this.#angle;
+    }
+
+    /**
+     * angle in radians
+     * @param {number} v
+     */
+    set angle(v) {
+        this.#angle = v;
     }
 
     /**
