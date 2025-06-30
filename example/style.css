@@ -5,6 +5,22 @@ body {
     overflow: hidden;
 }
 
+a {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+}
+
+a:visited {
+    color: rgb(185, 185, 185);
+}
+
 .pixelated {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
