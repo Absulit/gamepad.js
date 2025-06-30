@@ -27,6 +27,11 @@ export class Button extends EventTarget {
     #index = null;
     #debug = false;
 
+    /**
+     *
+     * @param {string} name
+     * @param {Number} index
+     */
     constructor(name, index) {
         super()
         this.#name = name;
@@ -148,6 +153,15 @@ export class Control extends EventTarget {
         });
     }
 
+    /**
+     * Add an button with alias `name`
+     * @param {string} name Name the button will be called on later
+     * @param {Number} index button index from the Gamepad API
+     */
+    addButton(name, index) {
+        this.#buttons[name] = new Button(name, index);
+    }
+
     get hasVibrationActuator() {
         return !!this.#gamepad.vibrationActuator;
     }
@@ -207,11 +221,10 @@ export class GamepadJS extends EventTarget {
         console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
-            // TODO controls.addButton method
-            control.buttons[buttonName] = new Button(buttonName, this.#mapping.buttons[buttonName]);
+            control.addButton(buttonName, this.#mapping.buttons[buttonName]);
         }
         for (let buttonName in this.#mapping.axes) {
-            control.buttons[buttonName] = new Button(buttonName, this.#mapping.axes[buttonName]);
+            control.addButton(buttonName, this.#mapping.axes[buttonName]);
         }
 
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
@@ -262,7 +275,7 @@ export class GamepadJS extends EventTarget {
                 continue;
             }
 
-            if(!control.hasVibrationActuator){
+            if (!control.hasVibrationActuator) {
                 control.gamepad = gamepad;
             }
 
