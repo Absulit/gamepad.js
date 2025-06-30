@@ -125,6 +125,13 @@ g.onConnected(e => {
     RB.onPushed(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.PRESSED);
     RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
 
+    const rect = connectedMessage.getBoundingClientRect();
+    let { left, top } = rect
+    console.log(rect);
+
+    sub.style.left = `${left}px`;
+    sub.style.top = `${top - rect.height - sub.height * .5}px`;
+
     sub.classList.remove('hide');
 })
 
@@ -276,11 +283,11 @@ function update() {
                 }
                 if (top > (window.innerHeight - sub.height)) {
                     top = window.innerHeight - sub.height
-                    control0.vibrate(100,1);
+                    control0.vibrate(100, 1);
                 }
-                if(top < 0){
+                if (top < 0) {
                     top = 0
-                    control0.vibrate(100,1);
+                    control0.vibrate(100, 1);
                 }
 
                 sub.style.left = `${left}px`;
