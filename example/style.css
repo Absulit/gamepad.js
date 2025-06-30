@@ -2,6 +2,23 @@ body {
     font-family: 'Courier New', Courier, monospace;
     background-color: rgb(34, 34, 34);
     color: rgb(185, 185, 185);
+    overflow: hidden;
+}
+
+a {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: rgb(185, 185, 185);
+    text-decoration: none;
+}
+
+a:visited {
+    color: rgb(185, 185, 185);
 }
 
 .pixelated {
@@ -33,6 +50,7 @@ body {
     height: 200px;
     width: 46vw;
     overflow: hidden;
+    white-space: pre;
 }
 
 .row {
@@ -70,4 +88,17 @@ body {
 
 #connectedmsg.connected {
     background-color: rgb(42, 68, 31);
+}
+
+.sub {
+    width: 50px;
+    height: 50px;
+    z-index: 10;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.hide {
+    display: none;
 }

@@ -109,10 +109,13 @@ update()
 ## example assets
 
 Gamepad assets from the example directory from kenney.nl
-
 [input prompts pixel](https://kenney.nl/assets/input-prompts-pixel-16)
 Created/distributed by Kenney ([www.kenney.nl](www.kenney.nl))
 License: [(Creative Commons Zero, CC0)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+
+Sub asset made by [swonky](https://opengameart.org/users/zwonky):
+[submarines](https://opengameart.org/content/submarines-in-arne16)
 
 ## minification
 ```sh

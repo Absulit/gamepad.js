@@ -19,6 +19,9 @@ const viewEl = document.getElementById('view');
 const menuEl = document.getElementById('menu');
 const joystickLeftEl = document.getElementById('joystickleft');
 const joystickRightEl = document.getElementById('joystickright');
+const sub = document.getElementById('sub');
+
+sub.rotation = 0; // rotation holder
 
 
 function addHistory(v) {
@@ -122,10 +125,16 @@ g.onConnected(e => {
     RB.onPushed(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.PRESSED);
     RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
 
+    const rect = connectedMessage.getBoundingClientRect();
+    const { left, top } = rect
+    sub.style.left = `${left}px`;
+    sub.style.top = `${top - rect.height - sub.height * .5}px`;
+    sub.classList.remove('hide');
 })
 
 g.onDisconnected(e => {
     console.log('---- Gamepad.DISCONNECTED');
+    sub.classList.add('hide');
     setConnectedMessage();
 })
 
@@ -155,8 +164,10 @@ function update() {
                 output.innerText += 'B PRESSED\n'
             }
 
+            sub.shake = false;
             if (A.touched && B.touched) {
                 control0.vibrate(100)
+                sub.shake = true;
             }
 
             if (Y.touched) {
@@ -175,11 +186,11 @@ function update() {
             }
 
             if (LT.touched) {
-                output.innerText += 'LT PRESSED\n'
+                output.innerText += `LT PRESSED\n\tValue: ${LT.value}\n`;
                 control0.vibrate(100, LT.value)
             }
             if (RT.touched) {
-                output.innerText += 'RT PRESSED\n'
+                output.innerText += `RT PRESSED\n\tValue: ${RT.value}\n`;
                 control0.vibrate(100, RT.value)
             }
 
@@ -218,7 +229,7 @@ function update() {
 
             joystickRightEl.src = imgs.JOYSTICK.NONE
             if (RJX.touched) {
-                output.innerText += `RJX PRESSED ${RJX.angle}\n`
+                output.innerText += `RJX PRESSED\n\tAngle: ${RJX.angle}\n\tDistance: ${RJX.distance}\n\tx: ${RJX.x}\n\ty: ${RJX.y}\n`
 
                 const percent = (RJX.proportion + OFFSET) % 1;
 
@@ -234,12 +245,13 @@ function update() {
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickRightEl.src = imgs.JOYSTICK.RIGHT
                 }
+                sub.rotation += RJX.x * .1 * (180 / Math.PI);
 
             }
 
             joystickLeftEl.src = imgs.JOYSTICK.NONE
             if (LJX.touched) {
-                output.innerText += `LJX PRESSED ${LJX.angle}\n`
+                output.innerText += `LJX PRESSED\n\tAngle: ${LJX.angle}\n\tDistance: ${LJX.distance}\n\tx: ${LJX.x}\n\ty: ${LJX.y}\n`
 
                 const percent = (LJX.proportion + OFFSET) % 1;
 
@@ -248,6 +260,7 @@ function update() {
                 }
                 if ((QUARTER * 2) > percent && percent > QUARTER) {
                     joystickLeftEl.src = imgs.JOYSTICK.LEFT
+
                 }
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
                     joystickLeftEl.src = imgs.JOYSTICK.DOWN
@@ -256,8 +269,44 @@ function update() {
                     joystickLeftEl.src = imgs.JOYSTICK.RIGHT
                 }
 
+                let { left, top } = getComputedStyle(sub)
+                left = parseFloat(left) + LJX.x * LJX.distance * 2;
+                top = parseFloat(top) + LJX.y * LJX.distance * 2;
+                if (left < -sub.width) {
+                    left = window.innerWidth;
+                }
+                if (left > (window.innerWidth + sub.width)) {
+                    left = 0;
+                }
+                if (top > (window.innerHeight - sub.height)) {
+                    top = window.innerHeight - sub.height
+                    control0.vibrate(100, 1);
+                }
+                if (top < 0) {
+                    top = 0
+                    control0.vibrate(100, 1);
+                }
+
+                sub.style.left = `${left}px`;
+                sub.style.top = `${top}px`;
             }
 
+            if (LJX.touched || RJX.touched) {
+                // flip sub going left or right
+                sub.classList.remove('right');
+                sub.scale = 'scale(1, 1)'
+                if (LJX.x > 0) {
+                    sub.classList.add('right');
+                    sub.scale = 'scale(-1, 1)';
+                }
+            }
+            let shake = ''
+            if (sub.shake) {
+                const x = Math.floor(Math.random() * 5);
+                const y = Math.floor(Math.random() * 5);
+                shake = `translate(${x}px, ${y}px)`;
+            }
+            sub.style.transform = `${sub.scale} ${shake}`;
         }
     })
 }
