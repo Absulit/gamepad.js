@@ -126,12 +126,9 @@ g.onConnected(e => {
     RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
 
     const rect = connectedMessage.getBoundingClientRect();
-    let { left, top } = rect
-    console.log(rect);
-
+    const { left, top } = rect
     sub.style.left = `${left}px`;
     sub.style.top = `${top - rect.height - sub.height * .5}px`;
-
     sub.classList.remove('hide');
 })
 
