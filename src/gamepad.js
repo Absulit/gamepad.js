@@ -29,6 +29,8 @@ export class Button extends EventTarget {
     #angle = 0;
     #distance = 0;
     #proportion = 0;
+    #touched = false;
+    #value = 0;
 
     /**
      *
@@ -72,24 +74,42 @@ export class Button extends EventTarget {
         return this.#distance;
     }
 
-    get proportion(){
+    get proportion() {
         return this.#proportion;
+    }
+
+    get touched() {
+        return this.#touched;
+    }
+
+    get value() {
+        return this.#value
+    }
+
+    set value(v) {
+        this.#value = v;
     }
 
     /**
      * To copy properties from the Gamepad API button
      * @param {Object} v
      */
-    setProperties(v) {
-        for (let p in v) {
-            this[p] = v[p]
-        }
+    setProperties(pressed, touched, x, y) {
+        // for (let p in v) {
+        //     this[p] = v[p]
+        // }
+        this.pressed = pressed
+        this.#touched = touched
+        this.x = x;
+        this.y = y;
         if (this.x && this.y) {
             const { x, y } = this; // TODO replace with #x and #y
             this.#distance = Math.sqrt(x * x + y * y);
             this.#angle = Math.atan2(-y, x);
             this.#proportion = this.#angle / TAU;
             if (this.#angle < 0) this.#angle += TAU;
+
+            this.#touched = (Math.abs(x) > .1) || (Math.abs(y) > .1);
         }
     }
 
@@ -316,7 +336,7 @@ export class GamepadJS extends EventTarget {
                 const button = control.buttons[buttonName];
                 const gamepadButton = gamepad.buttons[button.index];
                 button.debug = this.#debug;
-                button.setProperties(gamepadButton)
+                button.setProperties(gamepadButton.pressed, gamepadButton.touched)
                 button.dispatchEventIfPushed();
             }
 
@@ -328,8 +348,7 @@ export class GamepadJS extends EventTarget {
                 button.debug = this.#debug;
 
                 if (isObject) {
-                    button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
-                    button.touched = (Math.abs(button.x) > .1) || (Math.abs(button.y) > .1);
+                    button.setProperties(false, false, gamepad.axes[mappingButton.x], gamepad.axes[mappingButton.y])
                 } else {
                     const value = gamepad.axes[mappingButton];
                     button.lastValue = button.value;
