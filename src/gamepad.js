@@ -32,6 +32,8 @@ export class Button extends EventTarget {
     #touched = false;
     #value = 0;
     #lastValue = 0;
+    #x = 0;
+    #y = 0;
 
     /**
      *
@@ -52,6 +54,14 @@ export class Button extends EventTarget {
         return this.#index
     }
 
+    get x() {
+        return this.#x;
+    }
+
+    get y() {
+        return this.#y;
+    }
+
     /**
      * @param {boolean} v
      */
@@ -67,7 +77,6 @@ export class Button extends EventTarget {
         return this.#angle;
     }
 
-
     /**
      * distance from the center of the joystick
      */
@@ -75,6 +84,10 @@ export class Button extends EventTarget {
         return this.#distance;
     }
 
+    /**
+     * Normalized amount of angle.
+     * .5 is 50% of the angle.
+     */
     get proportion() {
         return this.#proportion;
     }
@@ -113,11 +126,10 @@ export class Button extends EventTarget {
     setProperties({ pressed, touched, value, x, y }) {
         this.pressed = pressed
         this.#touched = touched
-        this.x = x;
-        this.y = y;
+        this.#x = x;
+        this.#y = y;
         this.#value = value;
-        if (this.x && this.y) {
-            const { x, y } = this; // TODO replace with #x and #y
+        if (x && y) {
             this.#distance = Math.sqrt(x * x + y * y);
             this.#angle = Math.atan2(-y, x);
             this.#proportion = this.#angle / TAU;
