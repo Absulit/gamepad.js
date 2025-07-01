@@ -6,8 +6,6 @@ import { imgs } from './imgs.js';
 // minified
 // import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
-
-
 const g = new GamepadJS(gamepadInfo)
 g.debug = true;
 
@@ -299,10 +297,12 @@ function update() {
                 if (top > (window.innerHeight - sub.height)) {
                     top = window.innerHeight - sub.height
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
                 if (top < 0) {
                     top = 0
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
 
                 sub.style.left = `${left}px`;
