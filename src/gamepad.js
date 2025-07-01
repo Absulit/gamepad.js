@@ -172,6 +172,7 @@ export class Button extends EventTarget {
 export class Control extends EventTarget {
     #gamepad = null;
     #index = null;
+    #pose = null;
     /** @type {Object.<string, Button>} */
     #buttons = {}
     constructor(gamepad, index) {
@@ -193,6 +194,17 @@ export class Control extends EventTarget {
 
     get buttons() {
         return this.#buttons;
+    }
+
+    get pose() {
+        return this.#pose
+    }
+
+    /**
+     * @param {GamepadPose} v
+     */
+    set pose(v) {
+        this.#pose = v;
     }
 
     /**
