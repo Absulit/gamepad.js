@@ -286,6 +286,7 @@ function update() {
                 }
 
                 let { left, top } = getComputedStyle(sub)
+
                 left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 if (left < -sub.width) {

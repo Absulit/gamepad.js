@@ -100,6 +100,8 @@ export class Button extends EventTarget {
         }
         if (this.#touched) {
             this.#value = (this.#value + 1) * .5;
+        } else {
+            this.#value = 0; // restore to 0 or it becomes negative on Firefox
         }
         this.#dispatchEventIfPushed();
     }
@@ -332,8 +334,6 @@ export class GamepadJS extends EventTarget {
     }
 
     #isObject = v => typeof v === 'object' && v !== null;
-
-    // #distance = (x, y) => Math.sqrt(x * x + y * y);
 
     /**
      * To be called in the `requestAnimationFrame`
