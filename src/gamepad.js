@@ -270,6 +270,7 @@ export class GamepadJS extends EventTarget {
     #controls = {};
     #mapping = null;
     #debug = false;
+    #logKeys = false;
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -368,6 +369,29 @@ export class GamepadJS extends EventTarget {
 
             control.pose = gamepad.pose;
 
+            if (this.#logKeys) {
+                for (let k in gamepad.buttons) {
+                    const b = gamepad.buttons[k]
+                    if (b.touched || b.pressed) {
+                        console.log(`button: ${k}`);
+                    }
+                }
+                for (let k in gamepad.axes) {
+                    const b = gamepad.axes[k]
+
+                    gamepad.TEMP ||= {}
+                    gamepad.TEMP[k] ||= {}
+                    const t = gamepad.TEMP[k];
+                    t.lastValue = t.value ?? 0;
+                    t.value = b;
+
+                    t.touched = Math.abs(t.lastValue - t.value) > .1;
+                    if (t.touched) {
+                        console.log(`axis: ${k}`);
+                    }
+                }
+            }
+
             for (let buttonName in mapping.buttons) {
                 const button = control.buttons[buttonName];
                 const gamepadButton = gamepad.buttons[button.index];
@@ -386,7 +410,7 @@ export class GamepadJS extends EventTarget {
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                 } else {
                     // Firefox fix
-                    button.value = gamepad.axes[mappingButton]
+                    button.value = gamepad.axes[mappingButton];
                 }
             }
         }
@@ -406,5 +430,13 @@ export class GamepadJS extends EventTarget {
      */
     set debug(v) {
         this.#debug = v;
+    }
+
+    /**
+     * Enable to log the number of a key if it's not mapped
+     * @param {boolean} v
+     */
+    set logKeys(v) {
+        this.#logKeys = v;
     }
 }
