@@ -10,7 +10,7 @@
  * chrome://flags
  */
 
-import { defaultMapping0, defaultMapping1, defaultMappingFirefox1 } from './gamepadMapping.js';
+import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
 
 export const TAU = Math.PI * 2;
 
@@ -304,7 +304,7 @@ export class GamepadJS extends EventTarget {
 
         this.#mapping = this.#getDefaultMapping(gamepad);
         if (this.#gamepadInfo) {
-            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping || this.#getDefaultMapping(gamepad);;
+            this.#mapping ||= this.#gamepadInfo[gamepad.id]?.mapping;
         }
 
         // console.log(gamepad.mapping);
