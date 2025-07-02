@@ -8,6 +8,8 @@ Works with XBOX controllers. I have to test more devices. I will update here whe
 
 # Example:
 
+Live example here: https://absulit.github.io/gamepad.js/example/
+
 ```javascript
 // from example/main.js
 
