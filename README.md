@@ -1,5 +1,5 @@
 # gamepad.js
-Custom implementation (wrapper) of the Gamepad API for VR and gamepads.
+Custom implementation (wrapper) of the Gamepad API for ~~VR and~~ gamepads.
 
 First version of the library from 2017, refactored in 2025.
 
@@ -97,8 +97,9 @@ update()
 
 
 
-// Threejs Mesh called handLeft and handRight for the Touch Controllers hands
 // This is old code I need to review. Leaving as a placeholder for now.
+
+// Threejs Mesh called handLeft and handRight for the Touch Controllers hands
 // handLeft.position.fromArray(left.pose.position);
 // handLeft.quaternion.fromArray( left.pose.orientation );
 // handRight.position.fromArray(right.pose.position);

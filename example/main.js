@@ -6,8 +6,6 @@ import { imgs } from './imgs.js';
 // minified
 // import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
-
-
 const g = new GamepadJS(gamepadInfo)
 g.debug = true;
 
@@ -108,6 +106,22 @@ g.onConnected(e => {
     B.onReleased(e => buttonsEl.B.src = imgs.B.RELEASED);
     X.onReleased(e => buttonsEl.X.src = imgs.X.RELEASED);
     Y.onReleased(e => buttonsEl.Y.src = imgs.Y.RELEASED);
+
+    // colors
+
+
+    A.onPushed(e => sub.style.filter = `hue-rotate(55deg)`);
+    B.onPushed(e => sub.style.filter = `hue-rotate(315deg)`);
+    X.onPushed(e => sub.style.filter = `hue-rotate(170deg)`);
+    Y.onPushed(e => sub.style.filter = `hue-rotate(10deg)`);
+
+    const resetColor = e => sub.style.filter = '';
+
+    A.onReleased(resetColor);
+    B.onReleased(resetColor);
+    X.onReleased(resetColor);
+    Y.onReleased(resetColor);
+    //
 
     VIEW.onPushed(e => viewEl.src = imgs.VIEW.PRESSED);
     VIEW.onReleased(e => viewEl.src = imgs.VIEW.RELEASED);
@@ -247,7 +261,7 @@ function update() {
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
                     joystickRightEl.src = imgs.JOYSTICK.RIGHT
                 }
-                sub.rotation += RJX.x * .1 * (180 / Math.PI);
+                sub.rotation = RJX.angle * (180 / Math.PI);
 
             }
 
@@ -272,8 +286,9 @@ function update() {
                 }
 
                 let { left, top } = getComputedStyle(sub)
-                left = parseFloat(left) + LJX.x * LJX.distance * 2;
-                top = parseFloat(top) + LJX.y * LJX.distance * 2;
+
+                left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
+                top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 if (left < -sub.width) {
                     left = window.innerWidth;
                 }
@@ -283,32 +298,36 @@ function update() {
                 if (top > (window.innerHeight - sub.height)) {
                     top = window.innerHeight - sub.height
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
                 if (top < 0) {
                     top = 0
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
 
                 sub.style.left = `${left}px`;
                 sub.style.top = `${top}px`;
             }
 
-            if (LJX.touched || RJX.touched) {
+            sub.scale ||= 'scale(1, 1)';
+            if (RJX.touched) {
                 // flip sub going left or right
+                sub.scale = 'scale(1, 1)';
                 sub.classList.remove('right');
-                sub.scale = 'scale(1, 1)'
                 if (RJX.x > 0) {
                     sub.classList.add('right');
                     sub.scale = 'scale(-1, 1)';
                 }
             }
+
             let shake = ''
             if (sub.shake) {
                 const x = Math.floor(Math.random() * 5);
                 const y = Math.floor(Math.random() * 5);
                 shake = `translate(${x}px, ${y}px)`;
             }
-            sub.style.transform = `${sub.scale} ${shake}`;
+            sub.style.transform = `${shake} ${sub.scale}`;
         }
     })
 }
