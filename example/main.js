@@ -6,8 +6,6 @@ import { imgs } from './imgs.js';
 // minified
 // import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
-
-
 const g = new GamepadJS(gamepadInfo)
 g.debug = true;
 
@@ -288,6 +286,7 @@ function update() {
                 }
 
                 let { left, top } = getComputedStyle(sub)
+
                 left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 if (left < -sub.width) {
@@ -299,10 +298,12 @@ function update() {
                 if (top > (window.innerHeight - sub.height)) {
                     top = window.innerHeight - sub.height
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
                 if (top < 0) {
                     top = 0
                     control0.vibrate(100, 1);
+                    sub.shake = true;
                 }
 
                 sub.style.left = `${left}px`;
