@@ -6,7 +6,7 @@ import { imgs } from './imgs.js';
 // minified
 // import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
 
-const g = new GamepadJS(gamepadInfo)
+const g = new GamepadJS()
 g.debug = true;
 
 const output = document.getElementById('output');

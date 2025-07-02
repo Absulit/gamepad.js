@@ -10,7 +10,7 @@
  * chrome://flags
  */
 
-import { xboxMapping } from './gamepadMapping.js';
+import { defaultMapping0, defaultMapping1, defaultMappingFirefox1 } from './gamepadMapping.js';
 
 export const TAU = Math.PI * 2;
 
@@ -302,12 +302,12 @@ export class GamepadJS extends EventTarget {
 
         const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
 
-        this.#mapping = xboxMapping;
+        this.#mapping = this.#getDefaultMapping(gamepad);
         if (this.#gamepadInfo) {
-            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping || this.#getDefaultMapping(gamepad);;
         }
 
-        console.log(gamepad.mapping);
+        // console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
             control.addButton(buttonName, this.#mapping.buttons[buttonName]);
@@ -392,6 +392,13 @@ export class GamepadJS extends EventTarget {
         }
 
         f(this.#controls);
+    }
+
+    #getDefaultMapping(gamepad) {
+        if (6 === gamepad.axes.length) {
+            return defaultMapping1;
+        }
+        return defaultMapping0;
     }
 
     /** Enable to see info about the device in the console.

@@ -112,6 +112,67 @@ export const remoteMapping = {
     }
 };
 
+
+export const defaultMapping0 = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 2,
+        Y: 3,
+
+        LB: 4,
+        RB: 5,
+        LT: 6,
+        RT: 7,
+
+        VIEW: 8,
+        MENU: 9,
+
+        LJB: 10,
+        RJB: 11,
+
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 }
+    }
+};
+
+export const defaultMapping1 = {
+    buttons: {
+        A: 0,
+        B: 1,
+        X: 3,
+        Y: 2,
+
+        LB: 4,
+        RB: 5,
+        // LT: 6,
+        // RT: 7,
+
+        VIEW: 8,
+        MENU: 9,
+
+        LJB: 10,
+        RJB: 11,
+
+        UP: 12,
+        DOWN: 13,
+        LEFT: 14,
+        RIGHT: 15,
+    },
+    axes: {
+        LJX: { x: 0, y: 1 },
+        RJX: { x: 2, y: 3 },
+        LT: 4,
+        RT: 5,
+    }
+};
+
 /*
 
     The key(s) in gamepadInfo is a string to select the gamepad based on the
@@ -128,6 +189,12 @@ export const gamepadInfo = {
         mapping: xboxMapping
     },
     '045e-02dd-Microsoft X-Box One pad (Firmware 2015)': {
+        mapping: xboxMappingFirefox
+    },
+    'Xbox 360 Controller (XInput STANDARD GAMEPAD)': {
+        mapping: xboxMapping
+    },
+    'xinput': {
         mapping: xboxMappingFirefox
     },
     right: {
