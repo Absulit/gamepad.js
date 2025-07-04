@@ -6,12 +6,32 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-import { Button, Control, GamepadJS, TAU } from 'gamepad';
+import { GamepadJS } from 'gamepad';
 
 const g = new GamepadJS()
+const connectedMessage = document.getElementById('connectedmsg');
+
+/**
+ * To show if the device is connected on the screen
+ * @param {boolean} connected
+ */
+function setConnectedMessage(connected, deviceName) {
+    connectedMessage.innerText = 'device disconnected';
+    connectedMessage.classList.remove('connected');
+    if (connected) {
+        connectedMessage.innerText = `device connected`;
+        connectedMessage.classList.add('connected');
+    }
+}
 
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
+    setConnectedMessage(true);
+})
+
+g.onDisconnected(e => {
+    console.log('---- Gamepad.DISCONNECTED', e);
+    setConnectedMessage(false);
 })
 
 let scene, renderer, camera, floor, orbitControls;
@@ -101,7 +121,6 @@ function init() {
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
-
     // DEMO
 
     new RGBELoader()
@@ -163,7 +182,6 @@ function loadModel() {
         group.rotation.y = PI;
 
         model.traverse(function (object) {
-
             if (object.isMesh) {
                 if (object.name == 'vanguard_Mesh') {
                     object.castShadow = true;
@@ -191,9 +209,7 @@ function loadModel() {
         scene.add(skeleton);
 
         //
-
         createPanel();
-
         //
 
         const animations = gltf.animations;
@@ -236,7 +252,6 @@ function updateCharacter(delta) {
         controls.current = play;
 
         if (settings.fixe_transition) {
-
             current.reset();
             current.weight = 1.0;
             current.stopFading();
@@ -246,7 +261,6 @@ function updateCharacter(delta) {
             old._scheduleFading(fade, old.getEffectiveWeight(), 0);
             current._scheduleFading(fade, current.getEffectiveWeight(), 1);
             current.play();
-
         } else {
             setWeight(current, 1.0);
             old.fadeOut(fade);
@@ -257,7 +271,6 @@ function updateCharacter(delta) {
     // move object
 
     if (controls.current !== 'Idle') {
-
         // run/walk velocity
         const velocity = controls.current == 'Run' ? controls.runVelocity : controls.walkVelocity;
 
@@ -285,7 +298,6 @@ function updateCharacter(delta) {
         const dz = (position.z - floor.position.z);
         if (Math.abs(dx) > controls.floorDecale) floor.position.x += dx;
         if (Math.abs(dz) > controls.floorDecale) floor.position.z += dz;
-
     }
 
     if (mixer) mixer.update(delta);
@@ -323,17 +335,13 @@ function onKeyDown(event) {
 function onKeyUp(event) {
 
     const key = controls.key;
-    console.log(key);
     switch (event.code) {
-
         case 'ArrowUp': case 'KeyW': case 'KeyZ': key[0] = key[0] < 0 ? 0 : key[0]; break;
         case 'ArrowDown': case 'KeyS': key[0] = key[0] > 0 ? 0 : key[0]; break;
         case 'ArrowLeft': case 'KeyA': case 'KeyQ': key[1] = key[1] < 0 ? 0 : key[1]; break;
         case 'ArrowRight': case 'KeyD': key[1] = key[1] > 0 ? 0 : key[1]; break;
         case 'ShiftLeft': case 'ShiftRight': key[2] = 0; break;
-
     }
-
 }
 
 function onWindowResize() {
@@ -342,9 +350,6 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-
-const QUARTER = .25;
-const OFFSET = 1 - (QUARTER * .5);
 function animate() {
     // Render loop
 
@@ -355,9 +360,7 @@ function animate() {
             const { buttons } = control0;
             const { LJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
 
-            key[0] = 0;
-            key[1] = 0;
-            key[2] = 0;
+            key[0] = key[1] = key[2] = 0;
 
             if (RT.touched) {
                 key[2] = RT.value;
@@ -385,7 +388,6 @@ function animate() {
             }
         }
     })
-
 
     const delta = clock.getDelta();
     updateCharacter(delta);
