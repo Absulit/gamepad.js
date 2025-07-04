@@ -10,7 +10,7 @@
  * chrome://flags
  */
 
-import { xboxMapping } from './gamepadMapping.js';
+import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
 
 export const TAU = Math.PI * 2;
 
@@ -187,16 +187,18 @@ export class Control extends EventTarget {
     #gamepad = null;
     #index = null;
     #pose = null;
+    #id = null;
     /** @type {Object.<string, Button>} */
     #buttons = {}
-    constructor(gamepad, index) {
+    constructor(gamepad) {
         super()
         this.#gamepad = gamepad;
-        this.#index = index;
+        this.#index = gamepad.index;
+        this.#id = gamepad.id;
     }
 
     /**
-     * @param {Object} v
+     * @param {Gamepad} v
      */
     set gamepad(v) {
         this.#gamepad = v;
@@ -204,6 +206,10 @@ export class Control extends EventTarget {
 
     get index() {
         return this.#index
+    }
+
+    get id() {
+        return this.#id
     }
 
     get buttons() {
@@ -270,6 +276,7 @@ export class GamepadJS extends EventTarget {
     #controls = {};
     #mapping = null;
     #debug = false;
+    #logKeys = false;
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -300,14 +307,14 @@ export class GamepadJS extends EventTarget {
             })
         }
 
-        const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
+        const control = this.#controls[`control${index}`] = new Control(gamepad);
 
-        this.#mapping = xboxMapping;
+        this.#mapping = this.#getDefaultMapping(gamepad);
         if (this.#gamepadInfo) {
-            this.#mapping = this.#gamepadInfo[gamepad.id]?.mapping;
+            this.#mapping ||= this.#gamepadInfo[gamepad.id]?.mapping;
         }
 
-        console.log(gamepad.mapping);
+        // console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
             control.addButton(buttonName, this.#mapping.buttons[buttonName]);
@@ -368,6 +375,29 @@ export class GamepadJS extends EventTarget {
 
             control.pose = gamepad.pose;
 
+            if (this.#logKeys) {
+                for (let k in gamepad.buttons) {
+                    const b = gamepad.buttons[k]
+                    if (b.touched || b.pressed) {
+                        console.log(`button: ${k}`);
+                    }
+                }
+                for (let k in gamepad.axes) {
+                    const b = gamepad.axes[k]
+
+                    gamepad.TEMP ||= {}
+                    gamepad.TEMP[k] ||= {}
+                    const t = gamepad.TEMP[k];
+                    t.lastValue = t.value ?? 0;
+                    t.value = b;
+
+                    t.touched = Math.abs(t.lastValue - t.value) > .1;
+                    if (t.touched) {
+                        console.log(`axis: ${k}`);
+                    }
+                }
+            }
+
             for (let buttonName in mapping.buttons) {
                 const button = control.buttons[buttonName];
                 const gamepadButton = gamepad.buttons[button.index];
@@ -386,7 +416,7 @@ export class GamepadJS extends EventTarget {
                     button.setProperties({ x: gamepad.axes[mappingButton.x], y: gamepad.axes[mappingButton.y] })
                 } else {
                     // Firefox fix
-                    button.value = gamepad.axes[mappingButton]
+                    button.value = gamepad.axes[mappingButton];
                 }
             }
         }
@@ -394,10 +424,25 @@ export class GamepadJS extends EventTarget {
         f(this.#controls);
     }
 
+    #getDefaultMapping(gamepad) {
+        if (6 === gamepad.axes.length) {
+            return defaultMapping1;
+        }
+        return defaultMapping0;
+    }
+
     /** Enable to see info about the device in the console.
      * @param {boolean} v
      */
     set debug(v) {
         this.#debug = v;
+    }
+
+    /**
+     * Enable to log the number of a key if it's not mapped
+     * @param {boolean} v
+     */
+    set logKeys(v) {
+        this.#logKeys = v;
     }
 }
