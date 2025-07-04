@@ -8,7 +8,7 @@ Works with XBOX controllers. I have to test more devices. I will update here whe
 
 # Example:
 
-Live example here: https://absulit.github.io/gamepad.js/example/
+Live example here: https://absulit.github.io/gamepad.js/example/base/
 
 ```javascript
 // from example/main.js
@@ -23,9 +23,9 @@ g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
     /** @type {Control} */
-    const control0 = e.detail
-    console.log(control0.buttons)
-    const { A, RJX } = control0.buttons;
+    const control = e.detail
+    console.log(control.buttons)
+    const { A, RJX } = control.buttons;
 
     A.addEventListener(Button.PUSHED, e => {
         console.log('A - PUSHED');
