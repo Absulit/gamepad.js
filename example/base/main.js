@@ -1,10 +1,10 @@
-import { Button, Control, GamepadJS, TAU } from '../src/gamepad.js';
-import { gamepadInfo } from '../src/gamepadMapping.js';
+import { Button, Control, GamepadJS, TAU } from 'gamepad';
+import { gamepadInfo } from 'gamepadMapping';
 import { imgs } from './imgs.js';
 
 
 // minified
-// import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+// import { Button, Control, GamepadJS, gamepadInfo } from 'gamepadmin';
 
 const g = new GamepadJS()
 g.debug = true;
@@ -65,9 +65,8 @@ setConnectedMessage();
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
-
     /** @type {Control} */
-    const control = e.detail
+    const control = e.detail;
     setConnectedMessage(true, control.id);
     const { A, B, X, Y } = control.buttons;
     const { LEFT, RIGHT, UP, DOWN } = control.buttons;
