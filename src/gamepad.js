@@ -187,16 +187,18 @@ export class Control extends EventTarget {
     #gamepad = null;
     #index = null;
     #pose = null;
+    #id = null;
     /** @type {Object.<string, Button>} */
     #buttons = {}
-    constructor(gamepad, index) {
+    constructor(gamepad) {
         super()
         this.#gamepad = gamepad;
-        this.#index = index;
+        this.#index = gamepad.index;
+        this.#id = gamepad.id;
     }
 
     /**
-     * @param {Object} v
+     * @param {Gamepad} v
      */
     set gamepad(v) {
         this.#gamepad = v;
@@ -204,6 +206,10 @@ export class Control extends EventTarget {
 
     get index() {
         return this.#index
+    }
+
+    get id() {
+        return this.#id
     }
 
     get buttons() {
@@ -301,7 +307,7 @@ export class GamepadJS extends EventTarget {
             })
         }
 
-        const control = this.#controls[`control${index}`] = new Control(gamepad, index)//{ index, buttons: {} };
+        const control = this.#controls[`control${index}`] = new Control(gamepad);
 
         this.#mapping = this.#getDefaultMapping(gamepad);
         if (this.#gamepadInfo) {
