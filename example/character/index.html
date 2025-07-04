@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>three.js webgl - animation - walk</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link type="text/css" rel="stylesheet" href="main.css">
+        <style>
+            a {
+                color: #f00;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <div id="info">
+            <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - Skeletal Animation Walking
+            (model from <a href="https://www.mixamo.com/" target="_blank" rel="noopener">mixamo.com</a>)<br/>
+            use joystick and trigger to control character <span id="connectedmsg">device disconnected</span>
+        </div>
+
+        <script type="importmap">
+        {
+            "imports": {
+                "gamepad": "./../../src/gamepad.js",
+                "gamepadMapping": "./../../src/gamepadMapping.js",
+
+                "gamepadmin": "./../../build/gamepad.min.js",
+
+
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.178.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.178.0/examples/jsm/"
+            }
+        }
+        </script>
+
+        <script type="module" src="main.js"></script>
+
+    </body>
+</html>

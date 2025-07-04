@@ -1,13 +1,14 @@
-import { Button, Control, GamepadJS, TAU } from '../src/gamepad.js';
-import { gamepadInfo } from '../src/gamepadMapping.js';
+import { Button, Control, GamepadJS, TAU } from 'gamepad';
+import { gamepadInfo } from 'gamepadMapping';
 import { imgs } from './imgs.js';
 
 
 // minified
-// import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+// import { Button, Control, GamepadJS, gamepadInfo } from 'gamepadmin';
 
-const g = new GamepadJS(gamepadInfo)
+const g = new GamepadJS()
 g.debug = true;
+// g.logKeys = true; // to log keys if a button is not showing up
 
 const output = document.getElementById('output');
 const history = document.getElementById('history');
@@ -50,12 +51,12 @@ const topButtonsEl = {
  * To show if the device is connected on the screen
  * @param {boolean} connected
  */
-function setConnectedMessage(connected) {
-    connectedMessage.innerText = 'device disconnected'
-    connectedMessage.classList.remove('connected')
+function setConnectedMessage(connected, deviceName) {
+    connectedMessage.innerText = 'device disconnected';
+    connectedMessage.classList.remove('connected');
     if (connected) {
-        connectedMessage.innerText = 'device connected'
-        connectedMessage.classList.add('connected')
+        connectedMessage.innerText = `device connected: ${deviceName}`;
+        connectedMessage.classList.add('connected');
     }
 }
 
@@ -64,17 +65,16 @@ setConnectedMessage();
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
-    setConnectedMessage(true);
-
     /** @type {Control} */
-    const control0 = e.detail
-    const { A, B, X, Y } = control0.buttons;
-    const { LEFT, RIGHT, UP, DOWN } = control0.buttons;
-    const { VIEW, MENU } = control0.buttons;
-    const { LT, RT, LB, RB } = control0.buttons;
+    const control = e.detail;
+    setConnectedMessage(true, control.id);
+    const { A, B, X, Y } = control.buttons;
+    const { LEFT, RIGHT, UP, DOWN } = control.buttons;
+    const { VIEW, MENU } = control.buttons;
+    const { LT, RT, LB, RB } = control.buttons;
 
-    for (let key in control0.buttons) {
-        const button = control0.buttons[key];
+    for (let key in control.buttons) {
+        const button = control.buttons[key];
         let index = button.index;
         if (typeof button.index === 'object') {
             const { x, y } = button.index;
