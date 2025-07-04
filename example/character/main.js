@@ -20,7 +20,6 @@ const PI = Math.PI;
 const PI90 = Math.PI / 2;
 
 const controls = {
-
     key: [0, 0],
     ease: new THREE.Vector3(),
     position: new THREE.Vector3(),
@@ -32,7 +31,6 @@ const controls = {
     walkVelocity: 1.8,
     rotateSpeed: 0.05,
     floorDecale: 0,
-
 };
 
 
@@ -45,7 +43,6 @@ function init() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 2, - 5);
     //camera.lookAt( 0, 1, 0 );
-
 
     clock = new THREE.Clock();
 
@@ -102,20 +99,16 @@ function init() {
     new RGBELoader()
         .setPath('textures/equirectangular/')
         .load('lobe.hdr', function (texture) {
-
             texture.mapping = THREE.EquirectangularReflectionMapping;
             scene.environment = texture;
             scene.environmentIntensity = 1.5;
 
             loadModel();
             addFloor();
-
         });
-
 }
 
 function addFloor() {
-
     const size = 50;
     const repeat = 16;
 
@@ -151,15 +144,11 @@ function addFloor() {
     bulbLight.position.set(1, 0.1, - 3);
     bulbLight.castShadow = true;
     floor.add(bulbLight);
-
 }
 
 function loadModel() {
-
     const loader = new GLTFLoader();
     loader.load('models/gltf/Soldier.glb', function (gltf) {
-
-
         model = gltf.scene;
         group.add(model);
         model.rotation.y = PI;
@@ -168,9 +157,7 @@ function loadModel() {
         model.traverse(function (object) {
 
             if (object.isMesh) {
-
                 if (object.name == 'vanguard_Mesh') {
-
                     object.castShadow = true;
                     object.receiveShadow = true;
                     object.material.shadowSide = THREE.DoubleSide;
@@ -179,19 +166,14 @@ function loadModel() {
                     object.material.roughness = 0.2;
                     object.material.color.set(1, 1, 1);
                     object.material.metalnessMap = object.material.map;
-
                 } else {
-
                     object.material.metalness = 1;
                     object.material.roughness = 0;
                     object.material.transparent = true;
                     object.material.opacity = 0.8;
                     object.material.color.set(1, 1, 1);
-
                 }
-
             }
-
         });
 
         //
@@ -207,7 +189,6 @@ function loadModel() {
         //
 
         const animations = gltf.animations;
-
         mixer = new THREE.AnimationMixer(model);
 
         actions = {
@@ -217,23 +198,17 @@ function loadModel() {
         };
 
         for (const m in actions) {
-
             actions[m].enabled = true;
             actions[m].setEffectiveTimeScale(1);
             if (m !== 'Idle') actions[m].setEffectiveWeight(0);
-
         }
 
         actions.Idle.play();
-
         animate();
-
     });
-
 }
 
 function updateCharacter(delta) {
-
     const fade = controls.fadeDuration;
     const key = controls.key;
     const up = controls.up;
@@ -248,9 +223,6 @@ function updateCharacter(delta) {
     // change animation
 
     if (controls.current != play) {
-
-
-
         const current = actions[play];
         const old = actions[controls.current];
         controls.current = play;
@@ -268,13 +240,10 @@ function updateCharacter(delta) {
             current.play();
 
         } else {
-
             setWeight(current, 1.0);
             old.fadeOut(fade);
             current.reset().fadeIn(fade).play();
-
         }
-
     }
 
     // move object
@@ -314,50 +283,33 @@ function updateCharacter(delta) {
     if (mixer) mixer.update(delta);
 
     orbitControls.update();
-
 }
 
 function unwrapRad(r) {
-
     return Math.atan2(Math.sin(r), Math.cos(r));
-
 }
 
 function createPanel() {
-
     const panel = new GUI({ width: 310 });
-
-    panel.add(settings, 'show_skeleton').onChange((b) => {
-
-        skeleton.visible = b;
-
-    });
-
+    panel.add(settings, 'show_skeleton').onChange(b => skeleton.visible = b);
     panel.add(settings, 'fixe_transition');
-
 }
 
 function setWeight(action, weight) {
-
     action.enabled = true;
     action.setEffectiveTimeScale(1);
     action.setEffectiveWeight(weight);
-
 }
 
 function onKeyDown(event) {
-
     const key = controls.key;
     switch (event.code) {
-
         case 'ArrowUp': case 'KeyW': case 'KeyZ': key[0] = - 1; break;
         case 'ArrowDown': case 'KeyS': key[0] = 1; break;
         case 'ArrowLeft': case 'KeyA': case 'KeyQ': key[1] = - 1; break;
         case 'ArrowRight': case 'KeyD': key[1] = 1; break;
         case 'ShiftLeft': case 'ShiftRight': key[2] = 1; break;
-
     }
-
 }
 
 function onKeyUp(event) {
@@ -376,21 +328,15 @@ function onKeyUp(event) {
 }
 
 function onWindowResize() {
-
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-
 }
 
 function animate() {
-
     // Render loop
 
     const delta = clock.getDelta();
-
     updateCharacter(delta);
-
     renderer.render(scene, camera);
-
 }
