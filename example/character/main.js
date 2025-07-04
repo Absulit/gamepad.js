@@ -10,6 +10,10 @@ import { Button, Control, GamepadJS, TAU } from 'gamepad';
 
 const g = new GamepadJS()
 
+g.onConnected(e => {
+    console.log('---- Gamepad.CONNECTED', e);
+})
+
 let scene, renderer, camera, floor, orbitControls;
 let group, followGroup, model, skeleton, mixer, clock;
 
@@ -349,36 +353,36 @@ function animate() {
         const { control0 } = gamepadControls;
         if (control0) {
             const { buttons } = control0;
-            const { LJX } = buttons;
+            const { LJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
 
             key[0] = 0;
             key[1] = 0;
-            if (LJX.touched) {
+            key[2] = 0;
 
-                const percent = (LJX.proportion + OFFSET) % 1;
-                if (QUARTER > percent && percent > 0) {
-                    // UP
-                    key[0] = -1;
-                    key[1] = 0;
-                }
-                if ((QUARTER * 2) > percent && percent > QUARTER) {
-                    // LEFT
-                    key[0] = 0;
-                    key[1] = -1;
-
-                }
-                if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
-                    // DOWN
-                    key[0] = 1;
-                    key[1] = 0;
-                }
-                if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
-                    // RIGHT
-                    key[0] = 0;
-                    key[1] = 1;
-                }
+            if (RT.touched) {
+                key[2] = RT.value;
             }
 
+            if (LJX.touched) {
+                key[0] = LJX.y;
+                key[1] = LJX.x;
+            }
+
+            if (UP.touched) {
+                key[0] = -1;
+            }
+
+            if (LEFT.touched) {
+                key[1] = -1;
+            }
+
+            if (DOWN.touched) {
+                key[0] = 1;
+            }
+
+            if (RIGHT.touched) {
+                key[1] = 1;
+            }
         }
     })
 
