@@ -8,7 +8,7 @@ import { imgs } from './imgs.js';
 
 const g = new GamepadJS()
 g.debug = true;
-g.logKeys = true; // to log keys if a button is not showing up
+// g.logKeys = true; // to log keys if a button is not showing up
 
 const output = document.getElementById('output');
 const history = document.getElementById('history');

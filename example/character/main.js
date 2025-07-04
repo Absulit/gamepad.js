@@ -313,6 +313,7 @@ function createPanel() {
     const panel = new GUI({ width: 310 });
     panel.add(settings, 'show_skeleton').onChange(b => skeleton.visible = b);
     panel.add(settings, 'fixe_transition');
+    panel.close()
 }
 
 function setWeight(action, weight) {
