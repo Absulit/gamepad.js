@@ -6,6 +6,10 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
+import { Button, Control, GamepadJS, TAU } from 'gamepad';
+
+const g = new GamepadJS()
+
 let scene, renderer, camera, floor, orbitControls;
 let group, followGroup, model, skeleton, mixer, clock;
 
@@ -315,6 +319,7 @@ function onKeyDown(event) {
 function onKeyUp(event) {
 
     const key = controls.key;
+    console.log(key);
     switch (event.code) {
 
         case 'ArrowUp': case 'KeyW': case 'KeyZ': key[0] = key[0] < 0 ? 0 : key[0]; break;
@@ -333,8 +338,50 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+
+const QUARTER = .25;
+const OFFSET = 1 - (QUARTER * .5);
 function animate() {
     // Render loop
+
+    const key = controls.key;
+    g.update(gamepadControls => {
+        const { control0 } = gamepadControls;
+        if (control0) {
+            const { buttons } = control0;
+            const { LJX } = buttons;
+
+            key[0] = 0;
+            key[1] = 0;
+            if (LJX.touched) {
+
+                const percent = (LJX.proportion + OFFSET) % 1;
+                if (QUARTER > percent && percent > 0) {
+                    // UP
+                    key[0] = -1;
+                    key[1] = 0;
+                }
+                if ((QUARTER * 2) > percent && percent > QUARTER) {
+                    // LEFT
+                    key[0] = 0;
+                    key[1] = -1;
+
+                }
+                if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
+                    // DOWN
+                    key[0] = 1;
+                    key[1] = 0;
+                }
+                if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
+                    // RIGHT
+                    key[0] = 0;
+                    key[1] = 1;
+                }
+            }
+
+        }
+    })
+
 
     const delta = clock.getDelta();
     updateCharacter(delta);
