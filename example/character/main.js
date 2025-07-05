@@ -232,19 +232,15 @@ function loadModel() {
     });
 }
 
-function updateCharacter(delta) {
-    const fade = controls.fadeDuration;
-    const key = controls.key;
-    const up = controls.up;
-    const ease = controls.ease;
-    const rotate = controls.rotate;
-    const position = controls.position;
+function updateCharacter(delta, distance) {
+    const { fadeDuration: fade, key, up, ease, rotate, position } = controls;
     const azimuth = orbitControls.getAzimuthalAngle();
 
     const active = key[0] === 0 && key[1] === 0 ? false : true;
     const play = active ? (key[2] ? 'Run' : 'Walk') : 'Idle';
 
     // change animation
+    actions && (actions[controls.current].timeScale = distance);
 
     if (controls.current != play) {
         const current = actions[play];
@@ -354,7 +350,8 @@ function onWindowResize() {
 function animate() {
     // Render loop
 
-    const key = controls.key;
+    let { key } = controls;
+    let distance = 1;
     g.update(gamepadControls => {
         const { control0 } = gamepadControls;
         if (control0) {
@@ -370,6 +367,7 @@ function animate() {
             if (LJX.touched) {
                 key[0] = LJX.y;
                 key[1] = LJX.x;
+                distance = LJX.distance;
             }
 
             if (UP.touched) {
@@ -391,6 +389,6 @@ function animate() {
     })
 
     const delta = clock.getDelta();
-    updateCharacter(delta);
+    updateCharacter(delta, distance);
     renderer.render(scene, camera);
 }
