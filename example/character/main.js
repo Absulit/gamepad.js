@@ -113,6 +113,7 @@ function init() {
     orbitControls.enableDamping = true;
     orbitControls.enablePan = false;
     orbitControls.maxPolarAngle = PI90 - 0.05;
+    console.log(orbitControls);
     orbitControls.update();
 
     // EVENTS
@@ -347,6 +348,9 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+const spherical = new THREE.Spherical();
+spherical.setFromVector3(camera.position.clone().sub(orbitControls.target));
+
 function animate() {
     // Render loop
 
@@ -356,7 +360,7 @@ function animate() {
         const { control0 } = gamepadControls;
         if (control0) {
             const { buttons } = control0;
-            const { LJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
+            const { LJX, RJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
 
             key[0] = key[1] = key[2] = 0;
 
@@ -368,6 +372,17 @@ function animate() {
                 key[0] = LJX.y;
                 key[1] = LJX.x;
                 distance = LJX.distance;
+            }
+
+            if (RJX.touched) {
+                spherical.theta -= RJX.x * .1
+                spherical.phi += RJX.y * 0.01;
+
+                const epsilon = 0.1;
+                spherical.phi = Math.min(Math.max(spherical.phi, epsilon), (Math.PI * .5));
+                camera.position
+                    .copy(orbitControls.target)
+                    .add(new THREE.Vector3().setFromSpherical(spherical));
             }
 
             if (UP.touched) {
@@ -388,7 +403,12 @@ function animate() {
         }
     })
 
+
     const delta = clock.getDelta();
     updateCharacter(delta, distance);
     renderer.render(scene, camera);
 }
+
+
+
+
