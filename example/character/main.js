@@ -8,7 +8,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 import { GamepadJS } from 'gamepad';
 
-const g = new GamepadJS()
+const g = new GamepadJS();
+
 const connectedMessage = document.getElementById('connectedmsg');
 
 /**
@@ -113,7 +114,6 @@ function init() {
     orbitControls.enableDamping = true;
     orbitControls.enablePan = false;
     orbitControls.maxPolarAngle = PI90 - 0.05;
-    console.log(orbitControls);
     orbitControls.update();
 
     // EVENTS
@@ -350,6 +350,7 @@ function onWindowResize() {
 
 const spherical = new THREE.Spherical();
 spherical.setFromVector3(camera.position.clone().sub(orbitControls.target));
+const epsilon = 0.1;
 
 function animate() {
     // Render loop
@@ -375,11 +376,9 @@ function animate() {
             }
 
             if (RJX.touched) {
-                spherical.theta -= RJX.x * .1
+                spherical.theta -= RJX.x * .1;
                 spherical.phi += RJX.y * 0.01;
-
-                const epsilon = 0.1;
-                spherical.phi = Math.min(Math.max(spherical.phi, epsilon), (Math.PI * .5));
+                spherical.phi = Math.min(Math.max(spherical.phi, epsilon), (Math.PI * .5)); // clamp
                 camera.position
                     .copy(orbitControls.target)
                     .add(new THREE.Vector3().setFromSpherical(spherical));
@@ -403,12 +402,7 @@ function animate() {
         }
     })
 
-
     const delta = clock.getDelta();
     updateCharacter(delta, distance);
     renderer.render(scene, camera);
 }
-
-
-
-
