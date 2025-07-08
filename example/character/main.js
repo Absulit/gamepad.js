@@ -8,7 +8,8 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 import { GamepadJS } from 'gamepad';
 
-const g = new GamepadJS()
+const g = new GamepadJS();
+
 const connectedMessage = document.getElementById('connectedmsg');
 
 /**
@@ -232,19 +233,15 @@ function loadModel() {
     });
 }
 
-function updateCharacter(delta) {
-    const fade = controls.fadeDuration;
-    const key = controls.key;
-    const up = controls.up;
-    const ease = controls.ease;
-    const rotate = controls.rotate;
-    const position = controls.position;
+function updateCharacter(delta, distance) {
+    const { fadeDuration: fade, key, up, ease, rotate, position } = controls;
     const azimuth = orbitControls.getAzimuthalAngle();
 
     const active = key[0] === 0 && key[1] === 0 ? false : true;
     const play = active ? (key[2] ? 'Run' : 'Walk') : 'Idle';
 
     // change animation
+    actions && (actions[controls.current].timeScale = distance);
 
     if (controls.current != play) {
         const current = actions[play];
@@ -351,15 +348,20 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+const spherical = new THREE.Spherical();
+spherical.setFromVector3(camera.position.clone().sub(orbitControls.target));
+const epsilon = 0.1;
+
 function animate() {
     // Render loop
 
-    const key = controls.key;
+    let { key } = controls;
+    let distance = 1;
     g.update(gamepadControls => {
         const { control0 } = gamepadControls;
         if (control0) {
             const { buttons } = control0;
-            const { LJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
+            const { LJX, RJX, RT, LEFT, RIGHT, UP, DOWN } = buttons;
 
             key[0] = key[1] = key[2] = 0;
 
@@ -370,6 +372,16 @@ function animate() {
             if (LJX.touched) {
                 key[0] = LJX.y;
                 key[1] = LJX.x;
+                distance = LJX.distance;
+            }
+
+            if (RJX.touched) {
+                spherical.theta -= RJX.x * .1;
+                spherical.phi += RJX.y * 0.01;
+                spherical.phi = Math.min(Math.max(spherical.phi, epsilon), (Math.PI * .5)); // clamp
+                camera.position
+                    .copy(orbitControls.target)
+                    .add(new THREE.Vector3().setFromSpherical(spherical));
             }
 
             if (UP.touched) {
@@ -391,6 +403,6 @@ function animate() {
     })
 
     const delta = clock.getDelta();
-    updateCharacter(delta);
+    updateCharacter(delta, distance);
     renderer.render(scene, camera);
 }
