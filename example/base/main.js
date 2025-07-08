@@ -23,6 +23,34 @@ const sub = document.getElementById('sub');
 sub.rotation = 0; // rotation holder
 
 
+// function printImages(imgs){
+//     for (let key in imgs){
+//         const item = imgs[key];
+//         if(typeof item === 'object'){
+//             printImages(item)
+//             continue
+//         }
+//         console.log(item);
+
+//     }
+// }
+// printImages(imgs)
+
+const cache = {}
+function loadImage(url) {
+    let img = cache[url];
+    // console.log(img);
+
+    if (!img) {
+        img = new Image();
+        img.src = url;
+        cache[url] = img;
+    }
+    return img
+}
+
+
+
 function addHistory(v) {
     history.innerText = v + '\n' + history.innerText;
 }
@@ -84,12 +112,12 @@ g.onConnected(e => {
         button.onReleased(e => addHistory(`${button.name} - RELEASED`))
     }
 
-    LEFT.onPushed(e => arrowsEl.src = imgs.LEFT);
-    RIGHT.onPushed(e => arrowsEl.src = imgs.RIGHT);
-    UP.onPushed(e => arrowsEl.src = imgs.UP);
-    DOWN.onPushed(e => arrowsEl.src = imgs.DOWN);
+    LEFT.onPushed(e => arrowsEl.src = loadImage(imgs.LEFT).src);
+    RIGHT.onPushed(e => arrowsEl.src = loadImage(imgs.RIGHT).src);
+    UP.onPushed(e => arrowsEl.src = loadImage(imgs.UP).src);
+    DOWN.onPushed(e => arrowsEl.src = loadImage(imgs.DOWN).src);
 
-    const onReleased = e => arrowsEl.src = imgs.NONE;
+    const onReleased = e => arrowsEl.src = loadImage(imgs.NONE).src;
 
     LEFT.onReleased(onReleased);
     RIGHT.onReleased(onReleased);
@@ -97,15 +125,15 @@ g.onConnected(e => {
     DOWN.onReleased(onReleased);
     //
 
-    A.onPushed(e => buttonsEl.A.src = imgs.A.PRESSED);
-    B.onPushed(e => buttonsEl.B.src = imgs.B.PRESSED);
-    X.onPushed(e => buttonsEl.X.src = imgs.X.PRESSED);
-    Y.onPushed(e => buttonsEl.Y.src = imgs.Y.PRESSED);
+    A.onPushed(e => buttonsEl.A.src = loadImage(imgs.A.PRESSED).src);
+    B.onPushed(e => buttonsEl.B.src = loadImage(imgs.B.PRESSED).src);
+    X.onPushed(e => buttonsEl.X.src = loadImage(imgs.X.PRESSED).src);
+    Y.onPushed(e => buttonsEl.Y.src = loadImage(imgs.Y.PRESSED).src);
 
-    A.onReleased(e => buttonsEl.A.src = imgs.A.RELEASED);
-    B.onReleased(e => buttonsEl.B.src = imgs.B.RELEASED);
-    X.onReleased(e => buttonsEl.X.src = imgs.X.RELEASED);
-    Y.onReleased(e => buttonsEl.Y.src = imgs.Y.RELEASED);
+    A.onReleased(e => buttonsEl.A.src = loadImage(imgs.A.RELEASED).src);
+    B.onReleased(e => buttonsEl.B.src = loadImage(imgs.B.RELEASED).src);
+    X.onReleased(e => buttonsEl.X.src = loadImage(imgs.X.RELEASED).src);
+    Y.onReleased(e => buttonsEl.Y.src = loadImage(imgs.Y.RELEASED).src);
 
     // colors
 
@@ -123,21 +151,21 @@ g.onConnected(e => {
     Y.onReleased(resetColor);
     //
 
-    VIEW.onPushed(e => viewEl.src = imgs.VIEW.PRESSED);
-    VIEW.onReleased(e => viewEl.src = imgs.VIEW.RELEASED);
+    VIEW.onPushed(e => viewEl.src = loadImage(imgs.VIEW.PRESSED).src);
+    VIEW.onReleased(e => viewEl.src = loadImage(imgs.VIEW.RELEASED).src);
 
-    MENU.onPushed(e => menuEl.src = imgs.MENU.PRESSED);
-    MENU.onReleased(e => menuEl.src = imgs.MENU.RELEASED);
+    MENU.onPushed(e => menuEl.src = loadImage(imgs.MENU.PRESSED).src);
+    MENU.onReleased(e => menuEl.src = loadImage(imgs.MENU.RELEASED).src);
 
-    LT.onPushed(e => triggersEl.LEFT.src = imgs.TRIGGERS.LEFT.PRESSED);
-    LT.onReleased(e => triggersEl.LEFT.src = imgs.TRIGGERS.LEFT.RELEASED);
-    RT.onPushed(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.PRESSED);
-    RT.onReleased(e => triggersEl.RIGHT.src = imgs.TRIGGERS.RIGHT.RELEASED);
+    LT.onPushed(e => triggersEl.LEFT.src = loadImage(imgs.TRIGGERS.LEFT.PRESSED).src);
+    LT.onReleased(e => triggersEl.LEFT.src = loadImage(imgs.TRIGGERS.LEFT.RELEASED).src);
+    RT.onPushed(e => triggersEl.RIGHT.src = loadImage(imgs.TRIGGERS.RIGHT.PRESSED).src);
+    RT.onReleased(e => triggersEl.RIGHT.src = loadImage(imgs.TRIGGERS.RIGHT.RELEASED).src);
 
-    LB.onPushed(e => topButtonsEl.LEFT.src = imgs.TOPBUTTONS.LEFT.PRESSED);
-    LB.onReleased(e => topButtonsEl.LEFT.src = imgs.TOPBUTTONS.LEFT.RELEASED);
-    RB.onPushed(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.PRESSED);
-    RB.onReleased(e => topButtonsEl.RIGHT.src = imgs.TOPBUTTONS.RIGHT.RELEASED);
+    LB.onPushed(e => topButtonsEl.LEFT.src = loadImage(imgs.TOPBUTTONS.LEFT.PRESSED).src);
+    LB.onReleased(e => topButtonsEl.LEFT.src = loadImage(imgs.TOPBUTTONS.LEFT.RELEASED).src);
+    RB.onPushed(e => topButtonsEl.RIGHT.src = loadImage(imgs.TOPBUTTONS.RIGHT.PRESSED).src);
+    RB.onReleased(e => topButtonsEl.RIGHT.src = loadImage(imgs.TOPBUTTONS.RIGHT.RELEASED).src);
 
     const rect = connectedMessage.getBoundingClientRect();
     const { left, top } = rect
@@ -167,8 +195,6 @@ function update() {
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
             const { LJX, RJX } = buttons;
-
-            // arrowsEl.src = imgs.NONE;
 
             if (A.touched) {
                 output.innerText += 'A PRESSED\n'
@@ -243,49 +269,48 @@ function update() {
 
             // const {LJX, RJX} = axes;
 
-            joystickRightEl.src = imgs.JOYSTICK.NONE
+            joystickRightEl.src = loadImage(imgs.JOYSTICK.NONE).src;
             if (RJX.touched) {
                 output.innerText += `RJX PRESSED\n\tAngle: ${RJX.angle}\n\tDistance: ${RJX.distance}\n\tx: ${RJX.x}\n\ty: ${RJX.y}\n`
 
                 const percent = (RJX.proportion + OFFSET) % 1;
 
                 if (QUARTER > percent && percent > 0) {
-                    joystickRightEl.src = imgs.JOYSTICK.UP
+                    joystickRightEl.src = loadImage(imgs.JOYSTICK.UP).src;
                 }
                 if ((QUARTER * 2) > percent && percent > QUARTER) {
-                    joystickRightEl.src = imgs.JOYSTICK.LEFT
+                    joystickRightEl.src = loadImage(imgs.JOYSTICK.LEFT).src;
                 }
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
-                    joystickRightEl.src = imgs.JOYSTICK.DOWN
+                    joystickRightEl.src = loadImage(imgs.JOYSTICK.DOWN).src;
                 }
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
-                    joystickRightEl.src = imgs.JOYSTICK.RIGHT
+                    joystickRightEl.src = loadImage(imgs.JOYSTICK.RIGHT).src;
                 }
                 sub.rotation = RJX.angle * (180 / Math.PI);
-
             }
 
-            joystickLeftEl.src = imgs.JOYSTICK.NONE
+            joystickLeftEl.src = loadImage(imgs.JOYSTICK.NONE).src;
             if (LJX.touched) {
                 output.innerText += `LJX PRESSED\n\tAngle: ${LJX.angle}\n\tDistance: ${LJX.distance}\n\tx: ${LJX.x}\n\ty: ${LJX.y}\n`
 
                 const percent = (LJX.proportion + OFFSET) % 1;
 
                 if (QUARTER > percent && percent > 0) {
-                    joystickLeftEl.src = imgs.JOYSTICK.UP
+                    joystickLeftEl.src = loadImage(imgs.JOYSTICK.UP).src;
                 }
                 if ((QUARTER * 2) > percent && percent > QUARTER) {
-                    joystickLeftEl.src = imgs.JOYSTICK.LEFT
+                    joystickLeftEl.src = loadImage(imgs.JOYSTICK.LEFT).src;
 
                 }
                 if ((QUARTER * 3) > percent && percent > (QUARTER * 2)) {
-                    joystickLeftEl.src = imgs.JOYSTICK.DOWN
+                    joystickLeftEl.src = loadImage(imgs.JOYSTICK.DOWN).src;
                 }
                 if ((QUARTER * 4) > percent && percent > (QUARTER * 3)) {
-                    joystickLeftEl.src = imgs.JOYSTICK.RIGHT
+                    joystickLeftEl.src = loadImage(imgs.JOYSTICK.RIGHT).src;
                 }
 
-                let { left, top } = getComputedStyle(sub)
+                let { left, top } = getComputedStyle(sub);
 
                 left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
                 top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
@@ -296,12 +321,12 @@ function update() {
                     left = 0;
                 }
                 if (top > (window.innerHeight - sub.height)) {
-                    top = window.innerHeight - sub.height
+                    top = window.innerHeight - sub.height;
                     control0.vibrate(100, 1);
                     sub.shake = true;
                 }
                 if (top < 0) {
-                    top = 0
+                    top = 0;
                     control0.vibrate(100, 1);
                     sub.shake = true;
                 }
