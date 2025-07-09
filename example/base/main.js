@@ -22,25 +22,9 @@ const sub = document.getElementById('sub');
 
 sub.rotation = 0; // rotation holder
 
-
-// function printImages(imgs){
-//     for (let key in imgs){
-//         const item = imgs[key];
-//         if(typeof item === 'object'){
-//             printImages(item)
-//             continue
-//         }
-//         console.log(item);
-
-//     }
-// }
-// printImages(imgs)
-
 const cache = {}
 function loadImage(url) {
     let img = cache[url];
-    // console.log(img);
-
     if (!img) {
         img = new Image();
         img.src = url;
@@ -48,8 +32,6 @@ function loadImage(url) {
     }
     return img
 }
-
-
 
 function addHistory(v) {
     history.innerText = v + '\n' + history.innerText;
@@ -136,8 +118,6 @@ g.onConnected(e => {
     Y.onReleased(e => buttonsEl.Y.src = loadImage(imgs.Y.RELEASED).src);
 
     // colors
-
-
     A.onPushed(e => sub.style.filter = `hue-rotate(55deg)`);
     B.onPushed(e => sub.style.filter = `hue-rotate(315deg)`);
     X.onPushed(e => sub.style.filter = `hue-rotate(170deg)`);
@@ -168,7 +148,7 @@ g.onConnected(e => {
     RB.onReleased(e => topButtonsEl.RIGHT.src = loadImage(imgs.TOPBUTTONS.RIGHT.RELEASED).src);
 
     const rect = connectedMessage.getBoundingClientRect();
-    const { left, top } = rect
+    const { left, top } = rect;
     sub.style.left = `${left}px`;
     sub.style.top = `${top - rect.height - sub.height * .5}px`;
     sub.classList.remove('hide');
@@ -197,74 +177,74 @@ function update() {
             const { LJX, RJX } = buttons;
 
             if (A.touched) {
-                output.innerText += 'A PRESSED\n'
+                output.innerText += 'A PRESSED\n';
             }
 
             if (B.touched) {
-                output.innerText += 'B PRESSED\n'
+                output.innerText += 'B PRESSED\n';
             }
 
             sub.shake = false;
             if (A.touched && B.touched) {
-                control0.vibrate(100)
+                control0.vibrate(100);
                 sub.shake = true;
             }
 
             if (Y.touched) {
-                output.innerText += `Y PRESSED\n`
+                output.innerText += `Y PRESSED\n`;
             }
 
             if (X.touched) {
-                output.innerText += `X PRESSED\n`
+                output.innerText += `X PRESSED\n`;
             }
 
             if (LB.touched) {
-                output.innerText += 'LB PRESSED\n'
+                output.innerText += 'LB PRESSED\n';
             }
             if (RB.touched) {
-                output.innerText += 'RB PRESSED\n'
+                output.innerText += 'RB PRESSED\n';
             }
 
             if (LT.touched) {
                 output.innerText += `LT PRESSED\n\tValue: ${LT.value}\n`;
-                control0.vibrate(100, LT.value)
+                control0.vibrate(100, LT.value);
                 sub.shake = true;
             }
             if (RT.touched) {
                 output.innerText += `RT PRESSED\n\tValue: ${RT.value}\n`;
-                control0.vibrate(100, RT.value)
+                control0.vibrate(100, RT.value);
                 sub.shake = true;
             }
 
             if (VIEW.touched) {
-                output.innerText += 'VIEW PRESSED\n'
+                output.innerText += 'VIEW PRESSED\n';
             }
             if (MENU.touched) {
-                output.innerText += 'MENU PRESSED\n'
+                output.innerText += 'MENU PRESSED\n';
             }
             // LJB, RJB, UP, DOWN, LEFT, RIGHT
             if (LJB.touched) {
-                output.innerText += 'LJB PRESSED\n'
+                output.innerText += 'LJB PRESSED\n';
             }
 
             if (RJB.touched) {
-                output.innerText += 'RJB PRESSED\n'
+                output.innerText += 'RJB PRESSED\n';
             }
 
             if (UP.touched) {
-                output.innerText += 'UP PRESSED\n'
+                output.innerText += 'UP PRESSED\n';
             }
 
             if (DOWN.touched) {
-                output.innerText += 'DOWN PRESSED\n'
+                output.innerText += 'DOWN PRESSED\n';
             }
 
             if (LEFT.touched) {
-                output.innerText += 'LEFT PRESSED\n'
+                output.innerText += 'LEFT PRESSED\n';
             }
 
             if (RIGHT.touched) {
-                output.innerText += 'RIGHT PRESSED\n'
+                output.innerText += 'RIGHT PRESSED\n';
             }
 
             // const {LJX, RJX} = axes;
