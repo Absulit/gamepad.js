@@ -260,6 +260,20 @@ export class Control extends EventTarget {
     get hasVibrationActuator() {
         return !!this.#gamepad.vibrationActuator;
     }
+
+    /**
+     * Checks if one of the buttons in this control has been touched.
+     * This to differentiate it from other controls events.
+     */
+    get touched() {
+        for (let key in this.#buttons) {
+            const button = this.#buttons[key];
+            if(button.touched){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 /**
