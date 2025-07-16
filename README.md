@@ -54,7 +54,7 @@ function update() {
         // it also depends on how many the browser allows (Chrome has 4 slots)
         const { control0 } = controls;
 
-        if (control0) {
+        if (control0?.touched) {
             // the control has a list of buttons and axes, but all listed as buttons
             const { buttons } = control0;
             // the names of the buttons are based on the mapping (see gamepadMapping.js)
