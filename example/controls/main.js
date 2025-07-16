@@ -57,7 +57,7 @@ g.onDisconnected(e => {
 })
 
 function moveCube(cube, LJX, RT, RB) {
-    let { left, top } = getComputedStyle(cube0);
+    let { left, top } = getComputedStyle(cube);
 
     left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
     top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
