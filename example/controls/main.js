@@ -37,7 +37,6 @@ setConnectedMessage(false, null, connectedMessage1);
 g.onConnected(e => {
     console.log('---- Gamepad.CONNECTED', e);
 
-
     /** @type {Control} */
     const control = e.detail;
     setConnectedMessage(true, control.id, connectedMessages[control.index]);
@@ -46,14 +45,11 @@ g.onConnected(e => {
     const { VIEW, MENU } = control.buttons;
     const { LT, RT, LB, RB } = control.buttons;
 
-    const cube = cubes[control.index]
+    const cube = cubes[control.index];
     cube.classList.remove('hide');
     const left = window.innerWidth / 2, top = window.innerHeight / 2;
     cube.style.left = `${left}px`;
     cube.style.top = `${top}px`;
-
-
-
 })
 
 g.onDisconnected(e => {
@@ -63,11 +59,29 @@ g.onDisconnected(e => {
     setConnectedMessage(false, null, connectedMessages[control.index]);
 })
 
-function moveCube(cube, LJX, RT, RB) {
+function moveCube(cube, LJX, RT, RB, control) {
     let { left, top } = getComputedStyle(cube);
 
     left = parseFloat(left) + LJX.x * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
     top = parseFloat(top) + LJX.y * LJX.distance * 2 * (RT.value * 10 || 1) * (RB.touched * .1 || 1);
+
+
+    if (left < -cube.width) {
+        left = window.innerWidth;
+    }
+    if (left > (window.innerWidth + cube.width)) {
+        left = 0;
+    }
+    if (top > (window.innerHeight - cube.height)) {
+        top = window.innerHeight - cube.height;
+        control.vibrate(100, 1);
+        cube.shake = true;
+    }
+    if (top < 0) {
+        top = 0;
+        control.vibrate(100, 1);
+        cube.shake = true;
+    }
 
     cube.style.left = `${left}px`;
     cube.style.top = `${top}px`;
@@ -84,14 +98,14 @@ function update() {
         if (control0?.touched) {
             const { LJX, RT, RB } = control0.buttons;
             if (LJX.touched) {
-                moveCube(cube0, LJX, RT, RB);
+                moveCube(cube0, LJX, RT, RB, control0);
             }
         }
 
         if (control1?.touched) {
             const { LJX, RT, RB } = control1.buttons;
             if (LJX.touched) {
-                moveCube(cube1, LJX, RT, RB);
+                moveCube(cube1, LJX, RT, RB, control1);
             }
         }
 
