@@ -54,6 +54,8 @@ function update() {
         // it also depends on how many the browser allows (Chrome has 4 slots)
         const { control0 } = controls;
 
+        // `touched` property in control verifies if a button has been clicked on it
+        // this to distinguish it from other controls
         if (control0?.touched) {
             // the control has a list of buttons and axes, but all listed as buttons
             const { buttons } = control0;
