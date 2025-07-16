@@ -46,6 +46,13 @@ g.onConnected(e => {
     const { VIEW, MENU } = control.buttons;
     const { LT, RT, LB, RB } = control.buttons;
 
+    const cube = cubes[control.index]
+    cube.classList.remove('hide');
+    const left = window.innerWidth / 2, top = window.innerHeight / 2;
+    cube.style.left = `${left}px`;
+    cube.style.top = `${top}px`;
+
+
 
 })
 
@@ -81,7 +88,7 @@ function update() {
             }
         }
 
-       if (control1?.touched) {
+        if (control1?.touched) {
             const { LJX, RT, RB } = control1.buttons;
             if (LJX.touched) {
                 moveCube(cube1, LJX, RT, RB);
