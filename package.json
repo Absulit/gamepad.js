@@ -1,0 +1,31 @@
+{
+  "name": "gamepad.js",
+  "version": "2.0.0",
+  "description": "Custom implementation of the Gamepad API for gamepads.",
+  "main": "build/gamepad.min.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Absulit/gamepad.js.git"
+  },
+  "keywords": [
+    "control",
+    "gaming",
+    "controller",
+    "xbox",
+    "playstation",
+    "logitech",
+    "gamepad"
+  ],
+  "author": "absulit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Absulit/gamepad.js/issues"
+  },
+  "homepage": "https://github.com/Absulit/gamepad.js#readme"
+}
