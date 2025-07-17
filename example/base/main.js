@@ -170,7 +170,7 @@ function update() {
     g.update(controls => {
         const { control0 } = controls;
 
-        if (control0) {
+        if (control0?.touched) {
             const { buttons } = control0;
             const { A, B, X, Y, LB, RB, LT, RT, VIEW, MENU } = buttons;
             const { LJB, RJB, UP, DOWN, LEFT, RIGHT } = buttons;
