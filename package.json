@@ -3,7 +3,15 @@
   "version": "2.0.0",
   "description": "Custom implementation of the Gamepad API for gamepads.",
   "main": "build/gamepad.min.js",
+  "files": [
+    "build/",
+    "src/",
+    "LICENSE",
+    "README.md"
+  ],
   "directories": {
+    "src": "src",
+    "build": "build",
     "example": "example"
   },
   "scripts": {
