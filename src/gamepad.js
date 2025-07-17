@@ -260,6 +260,20 @@ export class Control extends EventTarget {
     get hasVibrationActuator() {
         return !!this.#gamepad.vibrationActuator;
     }
+
+    /**
+     * Checks if one of the buttons in this control has been touched.
+     * This to differentiate it from other controls events.
+     */
+    get touched() {
+        for (let key in this.#buttons) {
+            const button = this.#buttons[key];
+            if(button.touched){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 /**
@@ -327,17 +341,18 @@ export class GamepadJS extends EventTarget {
     }
 
     #onGamepadDisconnected = e => {
+        const { gamepad } = e;
+        const { index, id } = gamepad;
         if (this.#debug) {
-            const { gamepad } = e;
-            const { index, id } = gamepad;
             console.log(`%cGamepadJS.DISCONNECTED`, 'font-weight: bold; color: #ccc');
             console.table({
                 index, id, mapping: gamepad.mapping
             })
         }
 
-        this.#controls[`control${e.gamepad.index}`] = null;
-        this.dispatchEvent(new Event(GamepadJS.DISCONNECTED));
+        const control = this.#controls[`control${index}`];
+        this.dispatchEvent(new CustomEvent(GamepadJS.DISCONNECTED, { detail: control }));
+        this.#controls[`control${index}`] = null;
     }
 
     onConnected(f) {
