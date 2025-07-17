@@ -3,12 +3,17 @@ Custom implementation (wrapper) of the Gamepad API for ~~VR and~~ gamepads.
 
 First version of the library from 2017, refactored in 2025.
 
-Works with XBOX controllers. I have to test more devices. I will update here when I do so.
+Works with XBOX and Logitech controllers. I have to test more devices. I will update here when I do so. Or test and [open an issue with a recording of the tested device.](https://github.com/Absulit/gamepad.js/issues)
 
 
 # Example:
 
-Live example here: https://absulit.github.io/gamepad.js/example/base/
+### Live examples here:
+- [Test control buttons](https://absulit.github.io/gamepad.js/example/base/)
+
+- [Test with a 3d character](https://absulit.github.io/gamepad.js/example/character/)
+
+- [Test with 2 controls](https://absulit.github.io/gamepad.js/example/controls/)
 
 ```javascript
 // from example/main.js
