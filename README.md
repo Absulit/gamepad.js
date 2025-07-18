@@ -3,8 +3,22 @@ Custom implementation (wrapper) of the Gamepad API for ~~VR and~~ gamepads.
 
 First version of the library from 2017, refactored in 2025.
 
-Works with XBOX and Logitech controllers. I have to test more devices. I will update here when I do so. Or test and [open an issue with a recording of the tested device.](https://github.com/Absulit/gamepad.js/issues)
+Works with XBOX and Logitech controllers. I have to test more devices. I will update here when I do so. Or test and [open an issue with a video recording of the tested device.](https://github.com/Absulit/gamepad.js/issues)
 
+# Install
+
+### cdn
+
+```
+https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.min.js
+
+https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.module.js
+```
+
+### npm
+```sh
+npm i @absulit/gamepad.js
+```
 
 # Example:
 
@@ -15,10 +29,23 @@ Works with XBOX and Logitech controllers. I have to test more devices. I will up
 
 - [Test with 2 controls](https://absulit.github.io/gamepad.js/example/controls/)
 
-```javascript
-// from example/main.js
 
-import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+```html
+<!-- From example/base/index.html -->
+
+<script type="importmap">
+    {
+        "imports": {
+            "gamepad": "https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.min.js",
+        }
+    }
+</script>
+```
+
+```javascript
+// From example/base/main.js
+
+import { Button, Control, GamepadJS, gamepadInfo } from 'gamepad';
 
 // if no gamepadInfo is set it defaults to one of the controllers
 const g = new GamepadJS(gamepadInfo)
@@ -127,13 +154,9 @@ License: [(Creative Commons Zero, CC0)](https://creativecommons.org/publicdomain
 Sub asset made by [swonky](https://opengameart.org/users/zwonky):
 [submarines](https://opengameart.org/content/submarines-in-arne16)
 
-## minification
-```sh
-# install esbuild
-brew install esbuild
-```
+## bundle and minification
 
 ```sh
-# run script to build min
+# run script to build es6 module and min
 sh build.sh
 ```
