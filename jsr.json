@@ -1,0 +1,8 @@
+{
+    "name": "@absulit/gamepadjs",
+    "version": "2.0.1",
+    "license": "MIT",
+    "exports": {
+        ".": "./build/gamepad.module.js"
+    }
+}
