@@ -11,6 +11,8 @@ Works with XBOX and Logitech controllers. I have to test more devices. I will up
 
 ```
 https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.min.js
+
+https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.module.js
 ```
 
 ### npm
@@ -27,10 +29,23 @@ npm i @absulit/gamepad.js
 
 - [Test with 2 controls](https://absulit.github.io/gamepad.js/example/controls/)
 
-```javascript
-// from example/main.js
 
-import { Button, Control, GamepadJS, gamepadInfo } from '../build/gamepad.min.js';
+```html
+<!-- From example/base/index.html -->
+
+<script type="importmap">
+    {
+        "imports": {
+            "gamepad": "https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.min.js",
+        }
+    }
+</script>
+```
+
+```javascript
+// From example/base/main.js
+
+import { Button, Control, GamepadJS, gamepadInfo } from 'gamepad';
 
 // if no gamepadInfo is set it defaults to one of the controllers
 const g = new GamepadJS(gamepadInfo)
@@ -139,13 +154,9 @@ License: [(Creative Commons Zero, CC0)](https://creativecommons.org/publicdomain
 Sub asset made by [swonky](https://opengameart.org/users/zwonky):
 [submarines](https://opengameart.org/content/submarines-in-arne16)
 
-## minification
-```sh
-# install esbuild
-brew install esbuild
-```
+## bundle and minification
 
 ```sh
-# run script to build min
+# run script to build es6 module and min
 sh build.sh
 ```
