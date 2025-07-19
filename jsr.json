@@ -1,7 +1,7 @@
 {
     "name": "@absulit/gamepadjs",
     "version": "2.0.1",
-    "description": "Custom implementation of the Gamepad API for gamepads.",
+    "description": "Custom implementation (wrapper) of the Gamepad API for gamepads.",
     "license": "MIT",
     "exports": {
         ".": "./build/gamepad.module.js"

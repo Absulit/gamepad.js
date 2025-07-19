@@ -5,7 +5,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "Custom implementation of the Gamepad API for gamepads.",
+  "description": "Custom implementation (wrapper) of the Gamepad API for gamepads.",
   "main": "build/gamepad.min.js",
   "files": [
     "build/",

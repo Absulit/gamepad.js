@@ -323,6 +323,10 @@ export class GamepadJS extends EventTarget {
         window.addEventListener('gamepaddisconnected', this.#onGamepadDisconnected);
     }
 
+    /**
+     *
+     * @param {GamepadEvent} e
+     */
     #onGamepadConnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
@@ -353,7 +357,7 @@ export class GamepadJS extends EventTarget {
 
     /**
      *
-     * @param {Event} e
+     * @param {GamepadEvent} e
      */
     #onGamepadDisconnected = e => {
         const { gamepad } = e;
