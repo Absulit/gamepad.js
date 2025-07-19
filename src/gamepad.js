@@ -224,7 +224,7 @@ export class Control extends EventTarget {
     }
 
     /**
-     * @param {GamepadPose} v
+     * @param {Object} v
      */
     set pose(v) {
         this.#pose = v;
