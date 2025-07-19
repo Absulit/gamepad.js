@@ -294,6 +294,8 @@ export class GamepadJS extends EventTarget {
     #mapping = null;
     #debug = false;
     #logKeys = false;
+    #tempAxesValues = null;
+
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -399,16 +401,17 @@ export class GamepadJS extends EventTarget {
                     }
                 }
                 for (let k in gamepad.axes) {
-                    const b = gamepad.axes[k]
+                    const b = gamepad.axes[k];
 
-                    gamepad.TEMP ||= {}
-                    gamepad.TEMP[k] ||= {}
-                    const t = gamepad.TEMP[k];
-                    t.lastValue = t.value ?? 0;
-                    t.value = b;
+                    this.#tempAxesValues ||= new Map();
+                    this.#tempAxesValues.set(gamepad, new Map())
+                    const t = this.#tempAxesValues.get(gamepad).set(k);
 
-                    t.touched = Math.abs(t.lastValue - t.value) > .1;
-                    if (t.touched) {
+                    t.set('lastValue', t.get('value') ?? 0);
+                    t.set('value', b);
+
+                    t.set('touched', Math.abs(t.get('lastValue') - t.get('value')) > .1);
+                    if (t.get('touched')) {
                         console.log(`axis: ${k}`);
                     }
                 }
