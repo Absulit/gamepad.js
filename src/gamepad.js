@@ -12,6 +12,9 @@
 
 import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
 
+/**
+ * Two times PI
+ */
 export const TAU = Math.PI * 2;
 
 /**
