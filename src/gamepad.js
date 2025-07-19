@@ -164,7 +164,7 @@ export class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.PUSHED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onPushed(f) {
         this.addEventListener(Button.PUSHED, f);
@@ -173,7 +173,7 @@ export class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.RELEASED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onReleased(f) {
         this.addEventListener(Button.RELEASED, f);
@@ -268,7 +268,7 @@ export class Control extends EventTarget {
     get touched() {
         for (let key in this.#buttons) {
             const button = this.#buttons[key];
-            if(button.touched){
+            if (button.touched) {
                 return true;
             }
         }
@@ -371,7 +371,7 @@ export class GamepadJS extends EventTarget {
 
     /**
      * To be called in the `requestAnimationFrame`
-     * @param {(gamepads: Object.<string, Control>)} f callback
+     * @param {(gamepads: Object.<string, Control>) => void} f callback
      */
     update = f => {
         const gamepads = this.#getGamepads();
@@ -387,8 +387,6 @@ export class GamepadJS extends EventTarget {
             if (!control.hasVibrationActuator) {
                 control.gamepad = gamepad;
             }
-
-            control.pose = gamepad.pose;
 
             if (this.#logKeys) {
                 for (let k in gamepad.buttons) {
