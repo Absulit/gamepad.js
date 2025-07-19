@@ -194,17 +194,14 @@ export const defaultMapping1 = {
     }
 };
 
-/*
-
-    The key(s) in gamepadInfo is a string to select the gamepad based on the
-    string used as gamepad.id
-
-    The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
-    but I retrieve it using only a key part of that string, which is 'xbox'.
-    Same goes for the other controllers: 'right', 'left' and 'remote'
-
-*/
-
+/**
+ *  The key(s) in gamepadInfo is a string to select the gamepad based on the
+ *  string used as gamepad.id
+ *
+ *  The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
+ *  but I retrieve it using only a key part of that string, which is 'xbox'.
+ *  Same goes for the other controllers: 'right', 'left' and 'remote'
+ */
 export const gamepadInfo = {
     'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping

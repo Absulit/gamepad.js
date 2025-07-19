@@ -13,12 +13,17 @@
 import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
 
 /**
- * Two times PI
+ * Two times PI.
+ * https://en.wikipedia.org/wiki/Tau
+ * For better circle calculations.
  */
 export const TAU = Math.PI * 2;
 
 /**
  * Button
+ * Umbrella term and class for a Gamepad API button and axis.
+ * If a button or an axis is pressed it will be represented as a Button.
+ * A button is part of a {@link Control}.
  */
 
 export class Button extends EventTarget {
@@ -185,6 +190,8 @@ export class Button extends EventTarget {
 
 /**
  * Control
+ * Represents a single Gamepad.
+ * It contains a reference to all the {@link Button}s associated with it.
  */
 export class Control extends EventTarget {
     #gamepad = null;
@@ -280,7 +287,8 @@ export class Control extends EventTarget {
 }
 
 /**
- * Gamepad
+ * GamepadJS
+ * Main class to detect and use {@link Control}s.
  */
 
 export class GamepadJS extends EventTarget {
@@ -332,8 +340,6 @@ export class GamepadJS extends EventTarget {
         if (this.#gamepadInfo) {
             this.#mapping ||= this.#gamepadInfo[gamepad.id]?.mapping;
         }
-
-        // console.log(gamepad.mapping);
 
         for (let buttonName in this.#mapping.buttons) {
             control.addButton(buttonName, this.#mapping.buttons[buttonName]);
