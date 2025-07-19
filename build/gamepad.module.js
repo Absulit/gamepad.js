@@ -7,6 +7,9 @@
 
 */
 
+/**
+ * right hand mapping for vr devices
+ */
 const rightMapping = {
     buttons: {
         RJB: 0,
@@ -23,6 +26,9 @@ const rightMapping = {
 
 };
 
+/**
+ * left hand mapping for vr devices
+ */
 const leftMapping = {
     buttons: {
         LJB: 0,
@@ -39,6 +45,9 @@ const leftMapping = {
 
 };
 
+/**
+ * XBOX controller mapping
+ */
 const xboxMapping = {
     buttons: {
         A: 0,
@@ -68,6 +77,9 @@ const xboxMapping = {
     }
 };
 
+/**
+ * XBOX mapping adapted to Firefox
+ */
 const xboxMappingFirefox = {
     buttons: {
         A: 0,
@@ -99,6 +111,9 @@ const xboxMappingFirefox = {
     }
 };
 
+/**
+ * VR remote controller mapping
+ */
 const remoteMapping = {
     buttons: {
         SELECT: 0,
@@ -112,7 +127,9 @@ const remoteMapping = {
     }
 };
 
-
+/**
+ * Default mapping to load if no gamepadInfo is passed in the {@link GamepadJS} constructor.
+ */
 const defaultMapping0 = {
     buttons: {
         A: 0,
@@ -142,6 +159,10 @@ const defaultMapping0 = {
     }
 };
 
+/**
+ * Default mapping to load if no gamepadInfo is passed in the {@link GamepadJS} constructor,
+ * with the difference that this one is passed if the axes are different.
+ */
 const defaultMapping1 = {
     buttons: {
         A: 0,
@@ -173,17 +194,14 @@ const defaultMapping1 = {
     }
 };
 
-/*
-
-    The key(s) in gamepadInfo is a string to select the gamepad based on the
-    string used as gamepad.id
-
-    The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
-    but I retrieve it using only a key part of that string, which is 'xbox'.
-    Same goes for the other controllers: 'right', 'left' and 'remote'
-
-*/
-
+/**
+ *  The key(s) in gamepadInfo is a string to select the gamepad based on the
+ *  string used as gamepad.id
+ *
+ *  The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
+ *  but I retrieve it using only a key part of that string, which is 'xbox'.
+ *  Same goes for the other controllers: 'right', 'left' and 'remote'
+ */
 const gamepadInfo = {
     'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping
@@ -221,10 +239,18 @@ const gamepadInfo = {
  */
 
 
+/**
+ * Two times PI.
+ * https://en.wikipedia.org/wiki/Tau
+ * For better circle calculations.
+ */
 const TAU = Math.PI * 2;
 
 /**
  * Button
+ * Umbrella term and class for a Gamepad API button and axis.
+ * If a button or an axis is pressed it will be represented as a Button.
+ * A button is part of a {@link Control}.
  */
 
 class Button extends EventTarget {
@@ -373,7 +399,7 @@ class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.PUSHED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onPushed(f) {
         this.addEventListener(Button.PUSHED, f);
@@ -382,7 +408,7 @@ class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.RELEASED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onReleased(f) {
         this.addEventListener(Button.RELEASED, f);
@@ -391,6 +417,8 @@ class Button extends EventTarget {
 
 /**
  * Control
+ * Represents a single Gamepad.
+ * It contains a reference to all the {@link Button}s associated with it.
  */
 class Control extends EventTarget {
     #gamepad = null;
@@ -430,7 +458,7 @@ class Control extends EventTarget {
     }
 
     /**
-     * @param {GamepadPose} v
+     * @param {Object} v
      */
     set pose(v) {
         this.#pose = v;
@@ -477,7 +505,7 @@ class Control extends EventTarget {
     get touched() {
         for (let key in this.#buttons) {
             const button = this.#buttons[key];
-            if(button.touched){
+            if (button.touched) {
                 return true;
             }
         }
@@ -486,7 +514,8 @@ class Control extends EventTarget {
 }
 
 /**
- * Gamepad
+ * GamepadJS
+ * Main class to detect and use {@link Control}s.
  */
 
 class GamepadJS extends EventTarget {
@@ -500,6 +529,8 @@ class GamepadJS extends EventTarget {
     #mapping = null;
     #debug = false;
     #logKeys = false;
+    #tempAxesValues = null;
+
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -537,8 +568,6 @@ class GamepadJS extends EventTarget {
             this.#mapping ||= this.#gamepadInfo[gamepad.id]?.mapping;
         }
 
-        // console.log(gamepad.mapping);
-
         for (let buttonName in this.#mapping.buttons) {
             control.addButton(buttonName, this.#mapping.buttons[buttonName]);
         }
@@ -549,6 +578,10 @@ class GamepadJS extends EventTarget {
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
+    /**
+     *
+     * @param {Event} e
+     */
     #onGamepadDisconnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
@@ -564,10 +597,18 @@ class GamepadJS extends EventTarget {
         this.#controls[`control${index}`] = null;
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onConnected(f) {
         this.addEventListener(GamepadJS.CONNECTED, f);
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onDisconnected(f) {
         this.addEventListener(GamepadJS.DISCONNECTED, f);
     }
@@ -580,7 +621,7 @@ class GamepadJS extends EventTarget {
 
     /**
      * To be called in the `requestAnimationFrame`
-     * @param {(gamepads: Object.<string, Control>)} f callback
+     * @param {(gamepads: Object.<string, Control>) => void} f callback
      */
     update = f => {
         const gamepads = this.#getGamepads();
@@ -597,8 +638,6 @@ class GamepadJS extends EventTarget {
                 control.gamepad = gamepad;
             }
 
-            control.pose = gamepad.pose;
-
             if (this.#logKeys) {
                 for (let k in gamepad.buttons) {
                     const b = gamepad.buttons[k];
@@ -609,14 +648,15 @@ class GamepadJS extends EventTarget {
                 for (let k in gamepad.axes) {
                     const b = gamepad.axes[k];
 
-                    gamepad.TEMP ||= {};
-                    gamepad.TEMP[k] ||= {};
-                    const t = gamepad.TEMP[k];
-                    t.lastValue = t.value ?? 0;
-                    t.value = b;
+                    this.#tempAxesValues ||= new Map();
+                    this.#tempAxesValues.set(gamepad, new Map());
+                    const t = this.#tempAxesValues.get(gamepad).set(k);
 
-                    t.touched = Math.abs(t.lastValue - t.value) > .1;
-                    if (t.touched) {
+                    t.set('lastValue', t.get('value') ?? 0);
+                    t.set('value', b);
+
+                    t.set('touched', Math.abs(t.get('lastValue') - t.get('value')) > .1);
+                    if (t.get('touched')) {
                         console.log(`axis: ${k}`);
                     }
                 }

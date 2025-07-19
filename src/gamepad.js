@@ -351,6 +351,10 @@ export class GamepadJS extends EventTarget {
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
+    /**
+     *
+     * @param {Event} e
+     */
     #onGamepadDisconnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
@@ -366,10 +370,18 @@ export class GamepadJS extends EventTarget {
         this.#controls[`control${index}`] = null;
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onConnected(f) {
         this.addEventListener(GamepadJS.CONNECTED, f);
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onDisconnected(f) {
         this.addEventListener(GamepadJS.DISCONNECTED, f);
     }
