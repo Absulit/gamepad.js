@@ -7,6 +7,9 @@
 
 */
 
+/**
+ * right hand mapping for vr devices
+ */
 export const rightMapping = {
     buttons: {
         RJB: 0,
@@ -23,6 +26,9 @@ export const rightMapping = {
 
 };
 
+/**
+ * left hand mapping for vr devices
+ */
 export const leftMapping = {
     buttons: {
         LJB: 0,
@@ -39,6 +45,9 @@ export const leftMapping = {
 
 };
 
+/**
+ * XBOX controller mapping
+ */
 export const xboxMapping = {
     buttons: {
         A: 0,
@@ -68,6 +77,9 @@ export const xboxMapping = {
     }
 };
 
+/**
+ * XBOX mapping adapted to Firefox
+ */
 export const xboxMappingFirefox = {
     buttons: {
         A: 0,
@@ -99,6 +111,9 @@ export const xboxMappingFirefox = {
     }
 };
 
+/**
+ * VR remote controller mapping
+ */
 export const remoteMapping = {
     buttons: {
         SELECT: 0,
@@ -112,7 +127,9 @@ export const remoteMapping = {
     }
 };
 
-
+/**
+ * Default mapping to load if no gamepadInfo is passed in the {@link GamepadJS} constructor.
+ */
 export const defaultMapping0 = {
     buttons: {
         A: 0,
@@ -142,6 +159,10 @@ export const defaultMapping0 = {
     }
 };
 
+/**
+ * Default mapping to load if no gamepadInfo is passed in the {@link GamepadJS} constructor,
+ * with the difference that this one is passed if the axes are different.
+ */
 export const defaultMapping1 = {
     buttons: {
         A: 0,
@@ -173,17 +194,14 @@ export const defaultMapping1 = {
     }
 };
 
-/*
-
-    The key(s) in gamepadInfo is a string to select the gamepad based on the
-    string used as gamepad.id
-
-    The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
-    but I retrieve it using only a key part of that string, which is 'xbox'.
-    Same goes for the other controllers: 'right', 'left' and 'remote'
-
-*/
-
+/**
+ *  The key(s) in gamepadInfo is a string to select the gamepad based on the
+ *  string used as gamepad.id
+ *
+ *  The XBOX controller has this id: 'Xbox 360 Controller (XInput STANDARD GAMEPAD)'
+ *  but I retrieve it using only a key part of that string, which is 'xbox'.
+ *  Same goes for the other controllers: 'right', 'left' and 'remote'
+ */
 export const gamepadInfo = {
     'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02dd)': {
         mapping: xboxMapping

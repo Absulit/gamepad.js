@@ -1,4 +1,7 @@
 # gamepad.js
+
+![static content to pages](https://github.com/absulit/gamepad.js/actions/workflows/static.yml/badge.svg)
+
 Custom implementation (wrapper) of the Gamepad API for ~~VR and~~ gamepads.
 
 First version of the library from 2017, refactored in 2025.
