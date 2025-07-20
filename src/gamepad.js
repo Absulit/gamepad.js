@@ -12,10 +12,18 @@
 
 import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
 
+/**
+ * Two times PI.
+ * https://en.wikipedia.org/wiki/Tau
+ * For better circle calculations.
+ */
 export const TAU = Math.PI * 2;
 
 /**
  * Button
+ * Umbrella term and class for a Gamepad API button and axis.
+ * If a button or an axis is pressed it will be represented as a Button.
+ * A button is part of a {@link Control}.
  */
 
 export class Button extends EventTarget {
@@ -164,7 +172,7 @@ export class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.PUSHED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onPushed(f) {
         this.addEventListener(Button.PUSHED, f);
@@ -173,7 +181,7 @@ export class Button extends EventTarget {
     /**
      * Syntactic sugar for
      * `addEventListener(Button.RELEASED, f)`
-     * @param {Function} f callback
+     * @param {(event: Event) => void} f callback
      */
     onReleased(f) {
         this.addEventListener(Button.RELEASED, f);
@@ -182,6 +190,8 @@ export class Button extends EventTarget {
 
 /**
  * Control
+ * Represents a single Gamepad.
+ * It contains a reference to all the {@link Button}s associated with it.
  */
 export class Control extends EventTarget {
     #gamepad = null;
@@ -221,7 +231,7 @@ export class Control extends EventTarget {
     }
 
     /**
-     * @param {GamepadPose} v
+     * @param {Object} v
      */
     set pose(v) {
         this.#pose = v;
@@ -268,7 +278,7 @@ export class Control extends EventTarget {
     get touched() {
         for (let key in this.#buttons) {
             const button = this.#buttons[key];
-            if(button.touched){
+            if (button.touched) {
                 return true;
             }
         }
@@ -277,7 +287,8 @@ export class Control extends EventTarget {
 }
 
 /**
- * Gamepad
+ * GamepadJS
+ * Main class to detect and use {@link Control}s.
  */
 
 export class GamepadJS extends EventTarget {
@@ -291,6 +302,8 @@ export class GamepadJS extends EventTarget {
     #mapping = null;
     #debug = false;
     #logKeys = false;
+    #tempAxesValues = null;
+
     /**
      *
      * @param {Object.<string, Object>|null} gamepadInfo
@@ -310,6 +323,10 @@ export class GamepadJS extends EventTarget {
         window.addEventListener('gamepaddisconnected', this.#onGamepadDisconnected);
     }
 
+    /**
+     *
+     * @param {GamepadEvent} e
+     */
     #onGamepadConnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
@@ -328,8 +345,6 @@ export class GamepadJS extends EventTarget {
             this.#mapping ||= this.#gamepadInfo[gamepad.id]?.mapping;
         }
 
-        // console.log(gamepad.mapping);
-
         for (let buttonName in this.#mapping.buttons) {
             control.addButton(buttonName, this.#mapping.buttons[buttonName]);
         }
@@ -340,6 +355,10 @@ export class GamepadJS extends EventTarget {
         this.dispatchEvent(new CustomEvent(GamepadJS.CONNECTED, { detail: control }));
     }
 
+    /**
+     *
+     * @param {GamepadEvent} e
+     */
     #onGamepadDisconnected = e => {
         const { gamepad } = e;
         const { index, id } = gamepad;
@@ -355,10 +374,18 @@ export class GamepadJS extends EventTarget {
         this.#controls[`control${index}`] = null;
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onConnected(f) {
         this.addEventListener(GamepadJS.CONNECTED, f);
     }
 
+    /**
+     *
+     * @param {(event: Event) => void} f
+     */
     onDisconnected(f) {
         this.addEventListener(GamepadJS.DISCONNECTED, f);
     }
@@ -371,7 +398,7 @@ export class GamepadJS extends EventTarget {
 
     /**
      * To be called in the `requestAnimationFrame`
-     * @param {(gamepads: Object.<string, Control>)} f callback
+     * @param {(gamepads: Object.<string, Control>) => void} f callback
      */
     update = f => {
         const gamepads = this.#getGamepads();
@@ -388,8 +415,6 @@ export class GamepadJS extends EventTarget {
                 control.gamepad = gamepad;
             }
 
-            control.pose = gamepad.pose;
-
             if (this.#logKeys) {
                 for (let k in gamepad.buttons) {
                     const b = gamepad.buttons[k]
@@ -398,16 +423,17 @@ export class GamepadJS extends EventTarget {
                     }
                 }
                 for (let k in gamepad.axes) {
-                    const b = gamepad.axes[k]
+                    const b = gamepad.axes[k];
 
-                    gamepad.TEMP ||= {}
-                    gamepad.TEMP[k] ||= {}
-                    const t = gamepad.TEMP[k];
-                    t.lastValue = t.value ?? 0;
-                    t.value = b;
+                    this.#tempAxesValues ||= new Map();
+                    this.#tempAxesValues.set(gamepad, new Map())
+                    const t = this.#tempAxesValues.get(gamepad).set(k);
 
-                    t.touched = Math.abs(t.lastValue - t.value) > .1;
-                    if (t.touched) {
+                    t.set('lastValue', t.get('value') ?? 0);
+                    t.set('value', b);
+
+                    t.set('touched', Math.abs(t.get('lastValue') - t.get('value')) > .1);
+                    if (t.get('touched')) {
                         console.log(`axis: ${k}`);
                     }
                 }

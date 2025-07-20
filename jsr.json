@@ -1,8 +1,22 @@
 {
+    "$schema": "https://jsr.io/schema/config-file.v1.json",
     "name": "@absulit/gamepadjs",
-    "version": "2.0.1",
+    "version": "2.0.2",
+    "description": "Custom implementation (wrapper) of the Gamepad API for gamepads.",
     "license": "MIT",
     "exports": {
-        ".": "./build/gamepad.module.js"
+        ".": "./build/gamepad.min.js",
+        "./dev": "./build/gamepad.module.js",
+        "./prod": "./build/gamepad.min.js"
+    },
+    "publish": {
+        "include": [
+            "./build/",
+            "LICENSE",
+            "README.md",
+            "./src/",
+            "./example/",
+            "./jsr.json"
+        ]
     }
 }
