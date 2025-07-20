@@ -1,3 +1,4 @@
+/* @ts-self-types="./gamepad.module.d.ts" */
 /*
     Each mapping has a set of buttons and some have or not axes,
     inside there's a key that you will use to retrieve the event
