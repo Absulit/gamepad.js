@@ -1,13 +1,15 @@
 /**
  * @author Sebastián Sanabria Díaz
+ * This module contains {@link GamepadJS}, {@link Control} and {@link Button} which are the
+ * three main classes of this library.
+ *
  * Gamepad controls loosely based on this MDN link:
  * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
  * https://developers.google.com/web/fundamentals/vr/adding-input-to-a-webvr-scene/
-
-    Haptics:
-    https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
-    view-source:https://toji.github.io/webvr-samples/XX-vr-controllers.html
- * chrome://flags
+ *
+ * Haptics:
+ * https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate
+ * @module
  */
 
 import { defaultMapping0, defaultMapping1 } from './gamepadMapping.js';
