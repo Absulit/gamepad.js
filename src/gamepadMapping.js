@@ -1,11 +1,12 @@
-/*
-    Each mapping has a set of buttons and some have or not axes,
-    inside there's a key that you will use to retrieve the event
-    and the mapped value that corresponds to that key.
-
-    The axes are compound, but you can copy the same axis for others.
-
-*/
+/**
+ * Each mapping has a set of buttons and some have or not axes,
+ * inside there's a key that you will use to retrieve the event
+ * and the mapped value that corresponds to that key.
+ *
+ * The axes are compound, but you can copy the same axis for others.
+ * The mappings can be passed as {@link GamepadJS} `gamepadInfo` parameter.
+ * @module
+ */
 
 /**
  * right hand mapping for vr devices
