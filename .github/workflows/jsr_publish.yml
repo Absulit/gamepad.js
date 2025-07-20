@@ -1,6 +1,6 @@
 # .github/workflows/jsr_publish.yml
 
-name: Publish
+name: Publish to jsr.io
 
 on:
   push:

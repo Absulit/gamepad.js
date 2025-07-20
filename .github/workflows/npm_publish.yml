@@ -1,4 +1,6 @@
-name: Publish to npm
+# .github/workflows/npm_publish.yml
+
+name: Publish to npmjs.org
 
 on:
   release:
