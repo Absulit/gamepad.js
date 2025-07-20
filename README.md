@@ -22,6 +22,10 @@ https://cdn.jsdelivr.net/npm/@absulit/gamepad.js@<version>/build/gamepad.module.
 ```sh
 npm i @absulit/gamepad.js
 ```
+### bun
+```sh
+bunx jsr add @absulit/gamepadjs
+```
 
 # Example:
 
