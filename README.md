@@ -1,6 +1,8 @@
 # gamepad.js
 
 ![static content to pages](https://github.com/absulit/gamepad.js/actions/workflows/static.yml/badge.svg)
+![Publish to jsr.io](https://github.com/absulit/gamepad.js/actions/workflows/jsr_publish.yml/badge.svg)
+![Publish to npmjs.org](https://github.com/absulit/gamepad.js/actions/workflows/npm_publish.yml/badge.svg)
 
 Custom implementation (wrapper) of the Gamepad API for ~~VR and~~ gamepads.
 
